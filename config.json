@@ -1,21 +1,18 @@
 {
-	"google": {
-		"doc": [
-			{
-				"id": "190qoOvrJNBn_Fo1Y5nMTY7Or9VEYwnRN5v1VezOn-E0",
-				"filepath": "data/patrons.json"
-			},
-			{
-				"id": "",
-				"filepath": ""
-			}
-		],
-		"sheet": [
-			{
-				"id": "",
-				"gid": "",
-				"filepath": ""
-			}
-		]
-	}
+  "google": {
+    "doc": [{
+        "id": "190qoOvrJNBn_Fo1Y5nMTY7Or9VEYwnRN5v1VezOn-E0",
+        "filepath": "data/patrons.json"
+      },
+      {
+        "id": "1sBI-N3aykewY7uezPW5RZdzf3lekbhlmk7wnsq6T_X4",
+        "filepath": ""
+      }
+    ],
+    "sheet": [{
+      "id": "",
+      "gid": "",
+      "filepath": ""
+    }]
+  }
 }

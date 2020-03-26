@@ -3,31 +3,32 @@
 
 <head>
 
-	{{> base/meta}}
+    {{> base/meta}}
 
-	<link inline rel='stylesheet' href='bundle.css' />
+    <link inline rel='stylesheet' href='bundle.css' />
 
-	{{> base/font}}
+    {{> base/font}}
 
-	{{> base/analytics }}
+    {{!-- {{> base/analytics }} --}}
 
 </head>
 
 <body>
 
-	{{> base/header 'sticky'}}
+    {{!-- {{> base/header 'sticky'}} --}}
 
-	<main id='content'>
+    <main id='content'>
 
-		{{> story/intro }}
+        {{!-- {{> story/intro }} --}}
 
-	</main>
+    </main>
+    {{> story/main}}
 
-	{{> base/footer }}
+    {{!-- {{> base/footer }} --}}
 
-
-	<script src='{{basepath}}assets/scripts/d3.v5.12.0.min.js'></script>
-	<script src='main.js?version={{timestamp}}' async></script>
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.5.0/mapbox-gl.js'></script>
+    <script src='{{basepath}}assets/scripts/d3.v5.12.0.min.js'></script>
+    <script src='main.js?version={{timestamp}}' async></script>
 </body>
 
 </html>

@@ -1,0 +1,9 @@
+<div id='map'></div>
+
+<div class='story'>
+    {{#each doc.story}}
+    <div class='story-step' data-step='{{{data-step}}}' data-previous-step='{{{data-previous-step}}}'>
+        <p class='story-text'>{{{text}}}</p>
+    </div>
+    {{/each}}
+</div>
