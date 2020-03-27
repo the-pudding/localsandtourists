@@ -26,39 +26,49 @@ function updateMapBack(el) {
   }
 }
 
+
+
 function updateMap(el) {
   const currentStep = el.getAttribute('data-step')
 
   if (currentStep === 'slide1') {
     console.log(currentStep)
-
-    console.log('CHANGING COLOR BLACK')
-    $map.setPaintProperty('local-vs-tourist-circles', 'circle-color', '#000000');
-
+    $map.setLayoutProperty('local-vs-tourist-circles', 'visibility', 'visible');
   } else if (currentStep === 'slide2') {
     console.log(currentStep)
-
-    $map.setPaintProperty('local-vs-tourist-circles', 'circle-radius',
-      [
-        "interpolate",
-        ["cubic-bezier", 0.1, 1, 0.2, 1],
-        ["get", "total"], 0, 3, 1, 2, 85936, 20
-      ])
-
+    $map.setPaintProperty('local-vs-tourist-circles', 'circle-radius', ["interpolate", ["cubic-bezier", 0.1, 1, 0.2, 1],
+      ["get", "total"], 0, 3, 1, 2, 85936, 20
+    ])
     $map.setPaintProperty('local-vs-tourist-circles', 'circle-stroke-color', 'hsl(0, 0%, 100%)')
     $map.setPaintProperty('local-vs-tourist-circles', 'circle-stroke-width', 0.2)
-
-    "hsl(0, 0%, 100%)"
-
   } else if (currentStep === 'slide3') {
+    console.log(currentStep)
 
-    $map.setPaintProperty('local-vs-tourist-circles', 'circle-color', [
-      "interpolate",
-      ["linear"],
-      ["get", "pct_local"], 0, "#bf3a63", 1, "#3c58eb"
-    ])
+    const nycCoords = [40.767474, -73.970294]
+    const nycZoom = 10.8
+
+    $map.flyTo({
+      center: [nycCoords[1], nycCoords[0]],
+      speed: 1,
+      zoom: nycZoom
+    })
+    // $map.setPaintProperty('local-vs-tourist-circles', 'circle-color', ["interpolate", ["linear"],
+    //   ["get", "pct_local"], 0, "#bf3a63", 1, "#3c58eb"
+    // ])
   } else if (currentStep === 'slide4') {
-
+    console.log(currentStep)
+    $map.setPaintProperty('local-vs-tourist-circles', 'circle-opacity', ["step", ["get", "pct_local"], 0, 0.5999, 0, 0.6, 1])
+    $map.setPaintProperty('local-vs-tourist-circles', 'circle-radius', ["interpolate", ["cubic-bezier", 0.1, 1, 0.2, 1],
+      ["get", "total"], 0, 3, 1, 2, 24048, 25
+    ])
+  } else if (currentStep === 'slide5') {
+    console.log(currentStep)
+    const centerCooords = [40.119448, -98.056438]
+    $map.flyTo({
+      center: [centerCooords[1], centerCooords[0]],
+      speed: 1,
+      zoom: 3.9
+    })
   }
 
 }
@@ -94,15 +104,13 @@ function makeMap() {
   mapboxgl.accessToken =
     'pk.eyJ1IjoiZG9jazQyNDIiLCJhIjoiY2pjazE5eTM2NDl2aDJ3cDUyeDlsb292NiJ9.Jr__XbmAolbLyzPDj7-8kQ';
 
+  const centerCooords = [40.119448, -98.056438]
 
   const $map = new mapboxgl.Map({
-    // TODO Ask russell: Why do I need to return this map object if I declared it here? It's a global object, so shouldn't its value remain declared in the upper scope?
     container: `map`,
-    // center: [mapCoordinates.X1, mapCoordinates.Y1],
-    // maxZoom: 16,
+    center: [centerCooords[1], centerCooords[0]],
     maxZoom: 14,
     minZoom: 3,
-    // pitch: 60,
     dragPan: false,
     scrollZoom: false,
     style: 'mapbox://styles/dock4242/ck86bp6qk01jy1io6gzwfmxhb',
@@ -110,7 +118,7 @@ function makeMap() {
       [-180, 0],
       [-40, 75]
     ],
-    // zoom: 11,
+    zoom: 3.9,
   });
 
   $map.on('mousemove', e => {
@@ -128,6 +136,8 @@ function makeMap() {
     // console.log(e.lngLat.wrap());
   })
 
+
+
   return $map
 
 }
@@ -135,6 +145,10 @@ function makeMap() {
 function init() {
   setupDOM()
   $map = makeMap()
+  $map.on('load', () => {
+    $map.setLayoutProperty('local-vs-tourist-circles', 'visibility', 'none');
+
+  })
   $map.on('load', () => {
     setupEnterView()
   })

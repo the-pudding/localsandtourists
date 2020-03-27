@@ -1,10 +1,72 @@
 /* CUSTOM STORY STYLE */
 
-#content
-    height 100%
+.cover
+    height 100vh
+    position: relative
+
+    .cover-text-container
+        position: absolute
+        left: 50%
+        top: 50%
+        transform: translate(-50%,-50%)
+        
+        .byline-container
+            .byline
+                text-align: center
+                font-family: 'National 2 Web'
+                font-size 24px
+    
+        .hed-container
+            border: 3px solid #333;
+            padding 2rem 0 2rem 0
+
+            .title
+                margin 0 auto
+                text-align center
+                
+            .hed
+                font-size: 48px
+                font-family: 'AdamCG'
+                width 50rem
+            
+            .subhed
+                font-family: 'National 2 Web'
+                font-size 36px
+                  
+
+.highlight-blue
+    background-color: #FBB2BD
+    font-weight 800
+    color: white
+
+.highlight-red
+    background-color: #59B2BD
+    font-weight 800
+    color white
+    padding 0 0.5rem 0 0.5rem
+
+
+.highlight-green
+    background-color: #E8A599
+    font-weight 800
+    color white
+    padding 0 0.5rem 0 0.5rem
+
+
+.highlight-orange
+    background-color: #E59D59
+    font-weight 800
+    color white   
+    padding 0 0.5rem 0 0.5rem
+
+
+.highlight-purple
+    background-color: #A86AC9
+    font-weight 800
+    color white  
+    padding 0 0.5rem 0 0.5rem   
 
 #map
-    // height 100%
     position: sticky
     top: 0
     z-index: 1
@@ -14,25 +76,14 @@
         height 100vh
         position: relative
         z-index 3
-        // font-family: 'AdamCG'
-    
-    .story-step:first-of-type
-        height 100vh
-        .story-text
-            font-size: 48px
-            font-family: 'AdamCG'
-            text-align: center
-    
+
     .story-text
         margin 0 auto
         max-width 50rem
         background-color: white
-        padding 1rem 0.5rem 1rem 0.5rem
+        padding 2.5rem
         z-index 3
         border: 3px solid #333;
-        // font-family: 'AdamCG'
-
-    
 
     
     .story-behind
