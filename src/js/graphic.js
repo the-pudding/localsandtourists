@@ -4,7 +4,7 @@ import legend from 'd3-svg-legend'
 
 const height = window.innerHeight;
 let $map;
-
+let stopTimesquare = false
 
 function makeLegends() {
 
@@ -45,16 +45,46 @@ function makeLegends() {
 }
 
 
-function resize() {}
+function resize() {
+
+
+  const height = window.innerHeight
+  const width = window.innerWidth
+
+  console.log(height)
+
+  d3.selectAll('.story-step')
+    .style('height', `${height}px`)
+
+  d3.select('html')
+    .style('width', `${width}px`)
+
+  d3.select('.cover')
+    .style('height', `${height}px`)
+    .style('width', `${width}px`)
+
+  d3.select('.v2-cover-text')
+    .style('height', `${height}px`)
+
+  d3.select('.title-text')
+    .style('height', `${height/2}px`)
+
+  d3.select('.subhed')
+    .style('height', `${height/2}px`)
+
+
+
+
+}
+
 
 function updateMapBack(el) {
   const currentStep = el.getAttribute('data-previous-step')
   if (currentStep === 'slide1') {
     console.log(currentStep)
-
-    // $map.setPaintProperty('local-vs-tourist-circles', 'circle-color', '#000000');
     $map.setLayoutProperty('local-tourist-alpaca-corner', 'visibility', 'none');
     $map.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'none');
+    $map.setLayoutProperty('local-tourist-alpaca-corner-circles', 'visibility', 'none');
 
   } else if (currentStep === 'slide2') {
     console.log(currentStep)
@@ -91,59 +121,40 @@ function updateMap(el) {
 
   } else if (currentStep === 'slide2') {
     console.log(currentStep)
-
     $map.setLayoutProperty('local-tourist-alpaca-corner', 'visibility', 'visible');
-    $map.setPaintProperty('local-tourist-alpaca-corner', 'text-color', '#fa9fb5');
-    // $map.setPaintProperty('local-tourist-alpaca-corner', 'text-font', ["Open Sans Bold", "Arial Unicode MS Regular"])
+    $map.setLayoutProperty('local-tourist-alpaca-corner-circles', 'visibility', 'visible');
 
 
-
-
-
-    // $map.setPaintProperty('local-vs-tourist-circles', 'circle-radius', ["interpolate", ["cubic-bezier", 0.1, 1, 0.2, 1],
-    //   ["get", "total"], 0, 3, 1, 2, 85936, 20
-    // ])
-    // $map.setPaintProperty('local-vs-tourist-circles', 'circle-stroke-color', 'hsl(0, 0%, 100%)')
-    // $map.setPaintProperty('local-vs-tourist-circles', 'circle-stroke-width', 0.2)
   } else if (currentStep === 'slide3') {
     console.log(currentStep)
-
+    stopTimesquare = true;
     const nycCoords = [40.767474, -73.970294]
     const nycZoom = 10.8
-    // $map.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'visible');
 
     $map.flyTo({
-      center: [nycCoords[1], nycCoords[0]],
-      speed: 0.7,
-      zoom: nycZoom
-    })
+        center: [nycCoords[1], nycCoords[0]],
+        speed: 0.7,
+        zoom: nycZoom
+      })
+      .on('render', () => {
+        if (stopTimesquare) {
+          console.log(0)
+          $map.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'visible')
+        }
+      })
 
-
-    // $map.setPaintProperty('local-vs-tourist-circles', 'circle-color', ["interpolate", ["linear"],
-    //   ["get", "pct_local"], 0, "#bf3a63", 1, "#3c58eb"
-    // ])
   } else if (currentStep === 'slide4') {
-    console.log(currentStep)
+    stopTimesquare = false;
     $map.setLayoutProperty('local-vs-tourist-circles', 'visibility', 'none');
+    $map.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'none')
     $map.setLayoutProperty('local-vs-tourist-scores-abridged-circles', 'visibility', 'visible');
     $map.setLayoutProperty('local-vs-tourist-scores-abridged-text', 'visibility', 'visible');
-    // $map.setPaintProperty('local-vs-tourist-circles', 'circle-opacity', ["step", ["get", "pct_local"], 0, 0.5999, 0, 0.6, 1])
-    // $map.setPaintProperty('local-vs-tourist-circles', 'circle-radius', ["interpolate", ["cubic-bezier", 0.1, 1, 0.2, 1],
-    //   ["get", "total"], 0, 3, 1, 2, 24048, 25
-    // ])
   } else if (currentStep === 'slide5') {
     console.log(currentStep)
-    // const centerCooords = [40.119448, -98.056438]
-    // $map.flyTo({
-    //   center: [centerCooords[1], centerCooords[0]],
-    //   speed: 1,
-    //   zoom: 3.9
-    // })
-    // $map.setLayoutProperty('local-vs-tourist-scores', 'visibility', 'visible');
     $map.setLayoutProperty('local-vs-tourist-circles', 'visibility', 'none');
     d3.select('.legends-container').style('visibility', 'visible')
 
-    // $map.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'visible');
+
 
     $map.flyTo({
       zoom: 12.1
@@ -233,14 +244,18 @@ function makeMap() {
 }
 
 function init() {
+  resize()
   setupDOM()
   $map = makeMap()
   $map.on('load', () => {
     $map.setLayoutProperty('local-vs-tourist-circles', 'visibility', 'visible');
     $map.setLayoutProperty('local-vs-tourist-scores-abridged-text', 'visibility', 'none');
     $map.setLayoutProperty('local-vs-tourist-scores-abridged-circles', 'visibility', 'none');
+
+
     $map.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'none');
     $map.setLayoutProperty('local-tourist-alpaca-corner', 'visibility', 'none');
+    $map.setLayoutProperty('local-tourist-alpaca-corner-circles', 'visibility', 'none');
 
   })
   $map.on('load', () => {
