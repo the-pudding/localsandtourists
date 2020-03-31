@@ -104,6 +104,7 @@
     background-color: #FBB2BD
     font-weight 800
     color: white
+    text-align: center
 
 .highlight-red
     background-color: #59B2BD
@@ -158,6 +159,11 @@
     background-color: #810f7c
     color white 
 
+.highlight-navy
+    font-weight: 800
+    background-color #131671
+    color white
+
 #map
     position: sticky
     // margin-top 3rem
@@ -166,13 +172,19 @@
         
 
 
-.story
+.story    
     .story-step
         // height 100vh
         position: relative
         z-index 3
         background-color: rgba(255, 192, 203, 0);
-        
+
+    .story-step:last-of-type
+        .story-text
+            text-align: center
+            text-transform: capitalize
+            background-color: #131671
+
 
     .story-text
         margin 0 auto
@@ -186,7 +198,6 @@
         @media (max-width: 550px)
             max-width 20rem
             padding 1rem
-
     
     // .story-behind
     //     z-index: 2
@@ -203,3 +214,4 @@
     visibility: hidden
     
     
+

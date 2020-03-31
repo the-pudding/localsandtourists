@@ -4,7 +4,7 @@ import legend from 'd3-svg-legend'
 
 const height = window.innerHeight;
 let $map;
-let stopTimesquare = false
+let stopTimesquare = true
 
 function makeLegends() {
 
@@ -71,10 +71,12 @@ function resize() {
 
   d3.select('.subhed')
     .style('height', `${height/2}px`)
+}
 
-
-
-
+function setupExplore() {
+  d3.select('[data-step="slide6"]').on('click', () => {
+    console.log('nicenicnicenicne')
+  })
 }
 
 
@@ -273,6 +275,7 @@ function init() {
     setupEnterView()
   })
   makeLegends()
+  setupExplore()
 }
 
 
