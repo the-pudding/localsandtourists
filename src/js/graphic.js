@@ -75,8 +75,11 @@ function resize() {
 
 function setupExplore() {
   d3.select('[data-step="slide6"]').on('click', () => {
-    console.log('nicenicnicenicne')
+
   })
+
+  d3.selectAll('.story-step')
+    .style('z-index', '5')
 }
 
 
@@ -128,6 +131,13 @@ function updateMapBack(el) {
 
 
 function updateMap(el) {
+
+  d3.selectAll('.story')
+    .style('z-index', '50')
+
+  d3.selectAll('.story-step')
+    .style('z-index', '50')
+
   const currentStep = el.getAttribute('data-step')
 
   if (currentStep === 'slide1') {
@@ -216,24 +226,24 @@ function makeMap() {
 
   const centerCooords = [40.119448, -98.056438]
 
-  const $map = new mapboxgl.Map({
-    container: `map`,
-    center: [centerCooords[1], centerCooords[0]],
-    maxZoom: 14,
-    minZoom: 3,
-    dragPan: false,
-    scrollZoom: false,
-    style: 'mapbox://styles/dock4242/ck86bp6qk01jy1io6gzwfmxhb',
-    maxBounds: [
-      [-180, 0],
-      [-40, 75]
-    ],
-    zoom: 3.9,
-  });
+  const $map =
+    new mapboxgl.Map({
+      container: `map`,
+      center: [centerCooords[1], centerCooords[0]],
+      maxZoom: 14,
+      minZoom: 3,
+      dragPan: false,
+      scrollZoom: false,
+      style: 'mapbox://styles/dock4242/ck86bp6qk01jy1io6gzwfmxhb',
+      maxBounds: [
+        [-180, 0],
+        [-40, 75]
+      ],
+      zoom: 3.9,
+    });
 
   $map.on('mousemove', e => {
 
-    // console.log($map.queryRenderedFeatures(e))
 
     const pointFeatures = $map.queryRenderedFeatures(e.point)
     const relevantLayer = 'local_vs_tourist_scores-aitd0l'
@@ -243,6 +253,7 @@ function makeMap() {
       console.log(relevantFeature[0].properties.attraction_name)
     }
 
+    // console.log($map.queryRenderedFeatures(e))
     // const currentZoom = $map.getZoom()
     // if (currentZoom > 12) {
     //   $map.setLayoutProperty('local-vs-tourist-scores-text', 'visibility', 'none');
@@ -274,7 +285,7 @@ function init() {
   $map.on('load', () => {
     setupEnterView()
   })
-  makeLegends()
+  //   makeLegends()
   setupExplore()
 }
 

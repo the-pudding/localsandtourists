@@ -165,7 +165,11 @@
     color white
 
 #map
+    position: -webkit-sticky
     position: sticky
+    // position: fixed
+    // top: 1%
+    // left: 1%
     // margin-top 3rem
     top: 0
     z-index: 1
@@ -173,16 +177,18 @@
 
 
 .story    
+    position: relative
+    z-index: 2
     .story-step
         // height 100vh
-        position: relative
+        // position: relative
         z-index 3
         background-color: rgba(255, 192, 203, 0);
 
     .story-step:last-of-type
         .story-text
             text-align: center
-            text-transform: capitalize
+            text-transform: uppercase
             background-color: #131671
 
 
@@ -211,7 +217,7 @@
     transform: translate(-50%,-50%)
     width: 50px
     height: 50px
-    visibility: hidden
+    display: none
     
     
 
