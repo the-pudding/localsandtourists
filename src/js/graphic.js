@@ -71,6 +71,7 @@ function updateMapBack(el) {
     console.log(currentStep)
   } else if (currentStep === 'slide3_5') {
     console.log(currentStep)
+
   } else if (currentStep === 'slide4') {
     console.log(currentStep)
   } else if (currentStep === 'slide5') {

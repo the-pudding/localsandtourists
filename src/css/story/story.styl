@@ -1,20 +1,79 @@
 /* CUSTOM STORY STYLE */
-
 .cover
     height 100vh
     position: relative
+    display: flex
+    flex-direction: column
+    // background-color: #0f5483;
+    background-image: linear-gradient(#0f5483, #44A5EB);
+
+    .v2-cover-text
+        height 100vh
+        display: flex
+        flex-direction: column
+        padding-top 3rem
+        font-family: 'National 2 Web'
+        
+
+        .title
+            height 50%
+            display: flex
+            justify-content: center
+
+            .title-text
+                text-align: center
+                font-size: 112px
+                color: white
+                font-weight: 800
+                display: flex;
+                justify-content: center;
+                align-content: center;
+                flex-direction: column;
+        
+        .subhed
+            height 50%
+            text-align left
+            font-size 24px
+            color white
+
+            p
+                margin 0
+                margin-top 0.5rem
+                margin-left 3rem
+                font-size 24px
+
+            .byline
+                text-align: left
+                font-family: 'National 2 Web'
+                font-size 18px
+                color white
+
+                .byline-author
+                    color white
+
+    .v2-cover-img
+        height 50vh
+        display: flex
+        flex-direction: column
+        justify-content: space-evenly
+        margin 0 auto
+        max-width: 70rem
+
+        .v2-img-row
+            height 10%
+            display: flex
+            flex-direction: row
+            // justify-content: space-evenly
+
+            .cover-icon
+                height 100%
 
     .cover-text-container
         position: absolute
         left: 50%
         top: 50%
         transform: translate(-50%,-50%)
-        
-        .byline-container
-            .byline
-                text-align: center
-                font-family: 'National 2 Web'
-                font-size 24px
+    
     
         .hed-container
             border: 3px solid #333;
@@ -71,6 +130,19 @@
     font-weight 800
     color white  
     padding 0 0.5rem 0 0.5rem   
+
+.highlight-subhed-top   
+    font-weight: 800 
+    color: #2c80bc
+    background-color: white
+
+.highlight-subhed-middle
+    font-weight: 800
+    background-color #131671
+
+.highlight-subhed-bottom
+    font-weight: 800
+    background-color: #ff1863
     
 .cold-fish
     background-color: #fde0dd 
@@ -96,7 +168,8 @@
         background-color: white
         padding 2.5rem
         z-index 3
-        border: 3px solid #333;
+        // border: 3px solid #333;
+        border 3px solid #115484
         font-family: 'National 2 Web'
 
     
@@ -113,4 +186,5 @@
     width: 50px
     height: 50px
     visibility: hidden
-    // background-color: pink
+    
+    
