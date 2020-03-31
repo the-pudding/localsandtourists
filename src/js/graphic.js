@@ -95,15 +95,29 @@ function updateMapBack(el) {
       center: [centerCooords[1], centerCooords[0]],
       speed: 0.3,
       zoom: 3.9
+    }).on('render', () => {
+      if (stopTimesquare) {
+        console.log(0)
+        $map.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'none')
+        stopTimesquare = false
+      }
     })
+
 
   } else if (currentStep === 'slide3') {
     console.log(currentStep)
   } else if (currentStep === 'slide3_5') {
     console.log(currentStep)
-
+    $map.setLayoutProperty('local-vs-tourist-scores-abridged-circles', 'visibility', 'none');
+    $map.setLayoutProperty('local-vs-tourist-scores-abridged-text', 'visibility', 'none');
+    $map.setLayoutProperty('local-vs-tourist-circles', 'visibility', 'visible');
+    $map.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'visible')
   } else if (currentStep === 'slide4') {
     console.log(currentStep)
+
+    $map.flyTo({
+      zoom: 10.8
+    })
   } else if (currentStep === 'slide5') {
     console.log(currentStep)
   }
@@ -251,12 +265,9 @@ function init() {
     $map.setLayoutProperty('local-vs-tourist-circles', 'visibility', 'visible');
     $map.setLayoutProperty('local-vs-tourist-scores-abridged-text', 'visibility', 'none');
     $map.setLayoutProperty('local-vs-tourist-scores-abridged-circles', 'visibility', 'none');
-
-
     $map.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'none');
     $map.setLayoutProperty('local-tourist-alpaca-corner', 'visibility', 'none');
     $map.setLayoutProperty('local-tourist-alpaca-corner-circles', 'visibility', 'none');
-
   })
   $map.on('load', () => {
     setupEnterView()
