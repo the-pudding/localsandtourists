@@ -154,10 +154,13 @@ function setupExplore() {
 
   $aboutButton.on('click', () => {
     d3.select('.about').classed('hidden', false)
+    d3.select('.about-close').classed('hidden', false)
   })
 
   $aboutCloseButton.on('click', () => {
     d3.select('.about').classed('hidden', true)
+    d3.select('.about-close').classed('hidden', true)
+
   })
 
 
