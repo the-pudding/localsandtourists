@@ -74,9 +74,38 @@ function resize() {
 }
 
 function setupExplore() {
-  d3.select('[data-step="slide6"]').on('click', () => {
+  const $exploreButton = d3.select('[data-step="slide5"]')
+  const $storyButton = d3.select('.btn--to-story')
 
+  $exploreButton.on('click', () => {
+
+    $storyButton.classed('hidden', false)
+
+    d3.select('.story')
+      .classed('hidden', true)
+
+    $map.scrollZoom.enable()
+    $map.dragPan.enable()
+
+    // d3.select('header.is-sticky')
+    //   .classed('invisible', true)
   })
+
+
+  $storyButton.on('click', () => {
+
+    $storyButton.classed('hidden', true)
+
+    d3.select('.story')
+      .classed('hidden', false)
+
+    $map.scrollZoom.disable()
+    $map.dragPan.disable()
+
+    // d3.select('header.is-sticky')
+    //   .classed('invisible', false)
+  })
+
 
   d3.selectAll('.story-step')
     .style('z-index', '5')
@@ -230,7 +259,7 @@ function makeMap() {
     new mapboxgl.Map({
       container: `map`,
       center: [centerCooords[1], centerCooords[0]],
-      maxZoom: 14,
+      maxZoom: 17,
       minZoom: 3,
       dragPan: false,
       scrollZoom: false,
@@ -241,6 +270,8 @@ function makeMap() {
       ],
       zoom: 3.9,
     });
+
+
 
   $map.on('mousemove', e => {
 
@@ -265,7 +296,7 @@ function makeMap() {
   })
 
 
-
+  $map.addControl(new mapboxgl.NavigationControl())
   return $map
 
 }

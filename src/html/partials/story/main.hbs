@@ -4,9 +4,9 @@
             <div class='title-text'>USA</div>
         </div>
         <div class='subhed'>
-            <p>A concise, <span class='highlight-subhed-top'>locals-only</span> travel guide</p>
-            <p> to <span class='highlight-subhed-middle'>80,702 attractions,</span> </p>
-            <p>according to <span class='highlight-subhed-bottom'>9,526,193 reviews</span></p>
+            <p class='subhed__para'>A concise, <span class='highlight-subhed-top'>locals-only</span> travel guide</p>
+            <p class='subhed__para'> to <span class='highlight-subhed-middle'>80,702 attractions,</span> </p>
+            <p class='subhed__para'>according to <span class='highlight-subhed-bottom'>9,526,193 reviews</span></p>
             <p class='byline'>
                 by <a href='https://pudding.cool/author/ilia-blinderman/'><span class='byline-author'>Ilia
                         Blinderman</span></a>
@@ -14,7 +14,11 @@
         </div>
     </div>
 </div>
-<div id='map'></div>
+<div id='map'>
+    <div class='btn--to-story hidden'>
+        BACK TO STORY
+    </div>
+</div>
 
 <div class='story'>
     {{#each doc.story}}
