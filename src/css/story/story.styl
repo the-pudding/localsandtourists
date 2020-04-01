@@ -142,10 +142,10 @@
     padding 0 0.5rem 0 0.5rem   
 
 .highlight-pink
-    background-color: #fa9fb5
+    // background-color: #fa9fb5
     font-weight 800
-    color white  
-    padding 0 0.5rem 0 0.5rem   
+    // color white  
+    // padding 0 0.5rem 0 0.5rem   
 
 .highlight-subhed-top   
     font-weight: 800 
@@ -161,10 +161,10 @@
     background-color: #ff1863
     
 .cold-fish
-    background-color: #bfd3e6 
+    background-color: #f7f4f9 
 
 .hot-tamale 
-    background-color: #810f7c
+    background-color: #ce1256
     color white 
 
 .highlight-navy
@@ -251,10 +251,97 @@
     left 50%
     transform: translate(-50%,0)
     background-color: white
-    border: 3px solid #115484
+    // border: 3px solid #115484
+    border: 3px solid #131671;
     z-index: 100;
     font-family: 'National 2 Web'
     padding: 0.3rem;
     font-size: 18px;
-    color: #115484
+    // color: #115484
+    color #131671;
     font-weight: 800
+    cursor: pointer;
+
+.attraction-detail-container
+    -webkit-box-shadow: 2px 3px 5px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 2px 3px 5px 0px rgba(0,0,0,0.75);
+    box-shadow: 2px 3px 5px 0px rgba(0,0,0,0.75);
+    position: fixed;
+    text-align center
+    left: 50%;
+    top: 5px
+    transform: translate(-50%,0);
+    // background-color: #115484
+    background-color: #348dcb
+    font-family: 'National 2 Web'
+    z-index: 100;
+    padding 1rem
+    width auto
+    height auto
+    color: white
+    @media (max-width: 550px)
+        top: 1px
+        width 100%
+        height 5rem
+        padding 0.5rem
+    
+    .display--attraction-name
+        font-weight: 800
+        background-color #131671
+        font-family: 'National 2 Web'
+
+
+.btn--about
+    z-index: 1001;
+    position: fixed;
+    bottom: 0.5rem;
+    left: .75rem;
+    background-color: #131671;
+    color: white;
+    font-weight: 700;
+    line-height: 1;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    font-family: 'National 2 Web'
+    text-align: center
+    padding-top 0.5rem
+    cursor: pointer;
+
+.about
+    -webkit-box-shadow: 2px 3px 5px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 2px 3px 5px 0px rgba(0,0,0,0.75);
+    box-shadow: 2px 3px 5px 0px rgba(0,0,0,0.75);
+    font-family: 'National 2 Web'
+    position: fixed;
+    text-align center
+    left: 50%;
+    top: 5px
+    transform: translate(-50%,0);
+    background-color: #348dcb
+    z-index: 100;
+    padding 1rem
+    width auto
+    height auto
+    color: white
+
+    @media (max-width: 550px)
+        top: 1px
+        width 100%
+        height auto
+        padding 1rem
+    .about-close
+        background-color: #115484
+        border-radius: 50%;
+        font-family: 'National 2 Web';
+        text-align: center;
+        width: 2rem;
+        padding-top: 0.23rem;
+        height: 2rem;
+        position: absolute;
+        top: -2%;
+        right: -2%;
+        font-weight: 800;
+        cursor: pointer;
+    
+    

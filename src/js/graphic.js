@@ -6,6 +6,10 @@ const height = window.innerHeight;
 let $map;
 let stopTimesquare = true
 
+let attractionName = ''
+let attractionScore = ''
+let attractionTotal = ''
+
 function makeLegends() {
 
   const linearSize = d3.scaleLinear().domain([0, 24048]).range([2, 25]);
@@ -74,37 +78,89 @@ function resize() {
 }
 
 function setupExplore() {
-  const $exploreButton = d3.select('[data-step="slide5"]')
+  const $exploreButton = d3.select('[data-step="slide5"]').select('.story-text')
   const $storyButton = d3.select('.btn--to-story')
+  const detailsBar = d3.select('.attraction-detail-container')
+  const $aboutButton = d3.select('.btn--about')
+  const $aboutCloseButton = d3.select('.about-close')
+
+  const $detailsAttractionName = d3.select('.display--attraction-name')
+  const $detailsRating = d3.select('.display--rating')
+  const $detailsTotal = d3.select('.display--total')
+
+
+  $map.on('mousemove', e => {
+
+    const pointFeatures = $map.queryRenderedFeatures(e.point)
+    const relevantLayer = 'local_vs_tourist_scores_abrid-1tqzb9'
+    const relevantFeature = pointFeatures.filter(item => item.sourceLayer === relevantLayer)
+
+
+    if (relevantFeature.length > 0) {
+      attractionName = relevantFeature[0].properties.attraction_name
+      attractionScore = relevantFeature[0].properties.score
+      if (attractionScore.toString().length > 4) {
+        attractionScore = attractionScore.toString().substring(0, 4);
+      }
+      attractionTotal = relevantFeature[0].properties.total
+    }
+
+    $detailsAttractionName.text(attractionName)
+    $detailsRating.text(attractionScore)
+    $detailsTotal.text(attractionTotal)
+
+    const htmlString = attractionName == '' ? 'Hover over a destination to find out its rating and total number of reviews.' : `
+    <span class='display--attraction-name'>${attractionName}</span> scores an average of <span class='display--rating'>${attractionScore}</span>/5, with
+    <span class='display--total'>${attractionTotal}</span> ratings.`;
+
+    detailsBar.html(htmlString)
+    // console.log($map.queryRenderedFeatures(e))
+    // const currentZoom = $map.getZoom()
+    // if (currentZoom > 12) {
+    //   $map.setLayoutProperty('local-vs-tourist-scores-text', 'visibility', 'none');
+    // } else if (currentZoom < 12) {
+    //   $map.setLayoutProperty('local-vs-tourist-scores-text', 'visibility', 'visible');
+    // }
+
+    // console.log(e.lngLat.wrap());
+  })
 
   $exploreButton.on('click', () => {
 
+    console.log(`length ${attractionName.length}`)
+
+    $aboutButton.classed('hidden', false)
+    detailsBar.classed('hidden', false)
+
     $storyButton.classed('hidden', false)
-
-    d3.select('.story')
-      .classed('hidden', true)
-
+    d3.select('.story').classed('hidden', true)
     $map.scrollZoom.enable()
     $map.dragPan.enable()
 
-    // d3.select('header.is-sticky')
-    //   .classed('invisible', true)
+    d3.select('header.is-sticky').classed('invisible', true)
   })
 
 
   $storyButton.on('click', () => {
-
+    $aboutButton.classed('hidden', true)
+    detailsBar.classed('hidden', true)
     $storyButton.classed('hidden', true)
-
-    d3.select('.story')
-      .classed('hidden', false)
-
+    d3.select('.story').classed('hidden', false)
     $map.scrollZoom.disable()
     $map.dragPan.disable()
 
-    // d3.select('header.is-sticky')
-    //   .classed('invisible', false)
+    d3.select('header.is-sticky').classed('invisible', false)
   })
+
+  $aboutButton.on('click', () => {
+    d3.select('.about').classed('hidden', false)
+  })
+
+  $aboutCloseButton.on('click', () => {
+    d3.select('.about').classed('hidden', true)
+  })
+
+
 
 
   d3.selectAll('.story-step')
@@ -176,8 +232,8 @@ function updateMap(el) {
 
   } else if (currentStep === 'slide2') {
     console.log(currentStep)
-    $map.setLayoutProperty('local-tourist-alpaca-corner', 'visibility', 'visible');
-    $map.setLayoutProperty('local-tourist-alpaca-corner-circles', 'visibility', 'visible');
+    // $map.setLayoutProperty('local-tourist-alpaca-corner', 'visibility', 'visible');
+    // $map.setLayoutProperty('local-tourist-alpaca-corner-circles', 'visibility', 'visible');
 
 
   } else if (currentStep === 'slide3') {
@@ -212,7 +268,8 @@ function updateMap(el) {
 
 
     $map.flyTo({
-      zoom: 12.1
+      zoom: 12.1,
+      center: [-73.993158, 40.737553]
     })
 
     $map.setLayoutProperty('local-vs-tourist-scores-abridged-text', 'visibility', 'visible');
@@ -270,30 +327,6 @@ function makeMap() {
       ],
       zoom: 3.9,
     });
-
-
-
-  $map.on('mousemove', e => {
-
-
-    const pointFeatures = $map.queryRenderedFeatures(e.point)
-    const relevantLayer = 'local_vs_tourist_scores-aitd0l'
-    const relevantFeature = pointFeatures.filter(item => item.sourceLayer === relevantLayer)
-
-    if (relevantFeature.length > 0) {
-      console.log(relevantFeature[0].properties.attraction_name)
-    }
-
-    // console.log($map.queryRenderedFeatures(e))
-    // const currentZoom = $map.getZoom()
-    // if (currentZoom > 12) {
-    //   $map.setLayoutProperty('local-vs-tourist-scores-text', 'visibility', 'none');
-    // } else if (currentZoom < 12) {
-    //   $map.setLayoutProperty('local-vs-tourist-scores-text', 'visibility', 'visible');
-    // }
-
-    // console.log(e.lngLat.wrap());
-  })
 
 
   $map.addControl(new mapboxgl.NavigationControl())
