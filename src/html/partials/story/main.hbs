@@ -18,7 +18,8 @@
     <div class='attraction-detail-container hidden'>
         Hover over a destination to find out its rating and total number of reviews.
     </div>
-    <div class='about hidden'>To create this story, we gathered data on Trip Advisor reviews (a big thank you to <a
+    <div class='about hidden'>
+        To create this story, we gathered data on Trip Advisor reviews (a big thank you to <a
             href='http://www.ourpropeller.com/'>Harry
             Smith</a>!), and geocoded both the locations and the hometowns of reviewers throughout the USA. We then
         calculated the distance someone would have to drive in order to reach a particular destination. While
@@ -34,16 +35,19 @@
     <div class='btn--about hidden'>?</div>
 </div>
 
+{{!-- TESTING GROUND --}}
+<div class="map-overlay hidden">
+    <fieldset>
+        <input id="feature-filter" type="text" placeholder="Filter results by name" />
+    </fieldset>
+    <div id="feature-listing" class="listing"></div>
+</div>
+{{!-- TESTING GROUND --}}
+
 <div class='story'>
     {{#each doc.story}}
     <div class='story-step' data-step='{{{data-step}}}' data-previous-step='{{{data-previous-step}}}'>
         <p class='story-text'>{{{text}}}</p>
     </div>
-    {{!-- <div class='story-step-behind'>
-        <p class='story-text-behind'>{{{text}}}</p>
-    </div> --}}
     {{/each}}
 </div>
-{{!-- <div class='legends-container'>
-    <svg class='legend'></svg>
-</div> --}}
