@@ -1,6 +1,8 @@
 /* global d3 */
 import enterView from 'enter-view'
 import legend from 'd3-svg-legend'
+// import mapboxgl from 'mapbox-gl';
+// import MapboxCompare from 'mapbox-gl-compare';
 
 const height = window.innerHeight;
 let $map;
@@ -200,87 +202,87 @@ function setupExplore() {
   let listingEl = document.getElementById('feature-listing');
 
 
-  function renderListings(features) {
-    let empty = document.createElement('p');
-    // Clear any existing listings
-    listingEl.innerHTML = '';
-    if (features.length) {
+  //   function renderListings(features) {
+  //     let empty = document.createElement('p');
+  //     // Clear any existing listings
+  //     listingEl.innerHTML = '';
+  //     if (features.length) {
 
-      features.sort((a, b) => (+a.properties.score < +b.properties.score) ? 1 : ((+b.properties.score < +a.properties.score) ? -1 : 0)).forEach(function (feature) {
-        let prop = feature.properties;
-        // console.log(prop)
-        let item = document.createElement('a');
-        item.href = prop.attraction_name;
-        item.target = '_blank';
-        item.textContent = `${prop.attraction_name} (${formatScore(feature.properties.score)}, ${feature.properties.total} reviews)`;
-        item.addEventListener('mouseover', function () {
-          // Highlight corresponding feature on the map
-          popup
-            .setLngLat(feature.geometry.coordinates)
-            .setText(`${prop.attraction_name}`)
-            .addTo($map);
-        });
-        listingEl.appendChild(item);
-      });
+  //       features.sort((a, b) => (+a.properties.score < +b.properties.score) ? 1 : ((+b.properties.score < +a.properties.score) ? -1 : 0)).forEach(function (feature) {
+  //         let prop = feature.properties;
+  //         // console.log(prop)
+  //         let item = document.createElement('a');
+  //         item.href = prop.attraction_name;
+  //         item.target = '_blank';
+  //         item.textContent = `${prop.attraction_name} (${formatScore(feature.properties.score)}, ${feature.properties.total} reviews)`;
+  //         item.addEventListener('mouseover', function () {
+  //           // Highlight corresponding feature on the map
+  //           popup
+  //             .setLngLat(feature.geometry.coordinates)
+  //             .setText(`${prop.attraction_name}`)
+  //             .addTo($map);
+  //         });
+  //         listingEl.appendChild(item);
+  //       });
 
-      // Show the filter input
-      filterEl.parentNode.style.display = 'block';
-    } else if (features.length === 0 && filterEl.value !== '') {
-      empty.textContent = 'No results found';
-      listingEl.appendChild(empty);
-    } else {
-      empty.textContent = 'Drag the map to populate results';
-      listingEl.appendChild(empty);
+  //       // Show the filter input
+  //       filterEl.parentNode.style.display = 'block';
+  //     } else if (features.length === 0 && filterEl.value !== '') {
+  //       empty.textContent = 'No results found';
+  //       listingEl.appendChild(empty);
+  //     } else {
+  //       empty.textContent = 'Drag the map to populate results';
+  //       listingEl.appendChild(empty);
 
-      // Hide the filter input
-      filterEl.parentNode.style.display = 'none';
+  //       // Hide the filter input
+  //       filterEl.parentNode.style.display = 'none';
 
-      // remove features filter
-      $map.setFilter('local-vs-tourist-scores-abridged-circles', ['has', 'attraction_name']);
-    }
-  }
+  //       // remove features filter
+  //       $map.setFilter('local-vs-tourist-scores-abridged-circles', ['has', 'attraction_name']);
+  //     }
+  //   }
 
   function normalize(string) {
     return string.trim().toLowerCase();
   }
 
-  function getUniqueFeatures(array, comparatorProperty) {
-    var existingFeatureKeys = {};
-    // Because features come from tiled vector data, feature geometries may be split
-    // or duplicated across tile boundaries and, as a result, features may appear
-    // multiple times in query results.
-    var uniqueFeatures = array.filter(function (el) {
-      if (existingFeatureKeys[el.properties[comparatorProperty]]) {
-        return false;
-      } else {
-        existingFeatureKeys[el.properties[comparatorProperty]] = true;
-        return true;
-      }
-    });
-    return uniqueFeatures;
-  }
+  //   function getUniqueFeatures(array, comparatorProperty) {
+  //     var existingFeatureKeys = {};
+  //     // Because features come from tiled vector data, feature geometries may be split
+  //     // or duplicated across tile boundaries and, as a result, features may appear
+  //     // multiple times in query results.
+  //     var uniqueFeatures = array.filter(function (el) {
+  //       if (existingFeatureKeys[el.properties[comparatorProperty]]) {
+  //         return false;
+  //       } else {
+  //         existingFeatureKeys[el.properties[comparatorProperty]] = true;
+  //         return true;
+  //       }
+  //     });
+  //     return uniqueFeatures;
+  //   }
 
   $map.on('moveend', function () {
-    const features = $map.queryRenderedFeatures({
-      layers: ['local-vs-tourist-scores-abridged-circles']
-    });
+    // const features = $map.queryRenderedFeatures({
+    //   layers: ['local-vs-tourist-scores-abridged-circles']
+    // });
 
     // console.log(features)
 
-    if (features) {
-      const uniqueFeatures = getUniqueFeatures(features, 'attraction_id');
+    // if (features) {
+    //   const uniqueFeatures = getUniqueFeatures(features, 'attraction_id');
 
-      //   console.log(uniqueFeatures)
-      // Populate features for the listing overlay.
-      renderListings(uniqueFeatures);
+    //   //   console.log(uniqueFeatures)
+    //   // Populate features for the listing overlay.
+    //   renderListings(uniqueFeatures);
 
-      // Clear the input container
-      filterEl.value = '';
+    //   // Clear the input container
+    //   filterEl.value = '';
 
-      // Store the current features in sn `airports` variable to
-      // later use for filtering on `keyup`.
-      airports = uniqueFeatures;
-    }
+    //   // Store the current features in sn `airports` variable to
+    //   // later use for filtering on `keyup`.
+    //   airports = uniqueFeatures;
+    // }
   });
 
 
@@ -302,56 +304,56 @@ function setupExplore() {
   //   });
 
 
-  filterEl.addEventListener('keyup', function (e) {
-    let value = normalize(e.target.value);
+  //   filterEl.addEventListener('keyup', function (e) {
+  //     let value = normalize(e.target.value);
 
-    // console.log(value)
-    // Filter visible features that don't match the input value.
-    let filtered = airports.filter(function (feature) {
-      let name = normalize(feature.properties.attraction_name);
-      //   let code = feature.properties.attraction_id;
-      return name.indexOf(value) > -1;
-    });
+  //     // console.log(value)
+  //     // Filter visible features that don't match the input value.
+  //     let filtered = airports.filter(function (feature) {
+  //       let name = normalize(feature.properties.attraction_name);
+  //       //   let code = feature.properties.attraction_id;
+  //       return name.indexOf(value) > -1;
+  //     });
 
-    // Populate the sidebar with filtered results
-    renderListings(filtered);
+  //     // Populate the sidebar with filtered results
+  //     // renderListings(filtered);
 
-    // Set the filter to populate features into the layer.
-    if (filtered.length) {
-      $map.setFilter('local-vs-tourist-scores-abridged-circles', [
-        'match',
-        ['get', 'attraction_id'],
-        filtered.map(function (feature) {
-          return feature.properties.attraction_id;
-        }),
-        true,
-        false
-      ]);
-      // Call this function on initialization
-      // passing an empty array to render an empty state
-    } else if (filtered.length == 0) {
+  //     // Set the filter to populate features into the layer.
+  //     if (filtered.length) {
+  //       $map.setFilter('local-vs-tourist-scores-abridged-circles', [
+  //         'match',
+  //         ['get', 'attraction_id'],
+  //         filtered.map(function (feature) {
+  //           return feature.properties.attraction_id;
+  //         }),
+  //         true,
+  //         false
+  //       ]);
+  //       // Call this function on initialization
+  //       // passing an empty array to render an empty state
+  //     } else if (filtered.length == 0) {
 
-      let features = $map.queryRenderedFeatures({
-        layers: ['local-vs-tourist-scores-abridged-circles']
-      });
+  //       let features = $map.queryRenderedFeatures({
+  //         layers: ['local-vs-tourist-scores-abridged-circles']
+  //       });
 
 
-      letuniqueFeatures = getUniqueFeatures(features, 'attraction_id');
+  //       letuniqueFeatures = getUniqueFeatures(features, 'attraction_id');
 
-      renderListings([]);
+  //       renderListings([]);
 
-      //   console.log(uniqueFeatures)
-      // Populate features for the listing overlay.
-      renderListings(uniqueFeatures);
+  //       //   console.log(uniqueFeatures)
+  //       // Populate features for the listing overlay.
+  //       renderListings(uniqueFeatures);
 
-      // Clear the input container
-      filterEl.value = '';
+  //       // Clear the input container
+  //       filterEl.value = '';
 
-      // Store the current features in sn `airports` variable to
-      // later use for filtering on `keyup`.
-      airports = uniqueFeatures;
-    }
-  });
+  //       // Store the current features in sn `airports` variable to
+  //       // later use for filtering on `keyup`.
+  //       airports = uniqueFeatures;
+  //     }
+  //   });
 
 
 }
@@ -361,9 +363,9 @@ function updateMapBack(el) {
   const currentStep = el.getAttribute('data-previous-step')
   if (currentStep === 'slide1') {
     // console.log(currentStep)
-    $map.setLayoutProperty('local-tourist-alpaca-corner', 'visibility', 'none');
-    $map.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'none');
-    $map.setLayoutProperty('local-tourist-alpaca-corner-circles', 'visibility', 'none');
+    // $map.setLayoutProperty('local-tourist-alpaca-corner', 'visibility', 'none');
+    // $map.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'none');
+    // $map.setLayoutProperty('local-tourist-alpaca-corner-circles', 'visibility', 'none');
 
   } else if (currentStep === 'slide2') {
     // console.log(currentStep)
@@ -377,7 +379,7 @@ function updateMapBack(el) {
     }).on('render', () => {
       if (stopTimesquare) {
         // console.log(0)
-        $map.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'none')
+        // $map.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'none')
         stopTimesquare = false
       }
     })
@@ -387,10 +389,10 @@ function updateMapBack(el) {
     // console.log(currentStep)
   } else if (currentStep === 'slide3_5') {
     // console.log(currentStep)
-    $map.setLayoutProperty('local-vs-tourist-scores-abridged-circles', 'visibility', 'none');
-    $map.setLayoutProperty('local-vs-tourist-scores-abridged-text', 'visibility', 'none');
-    $map.setLayoutProperty('local-vs-tourist-circles', 'visibility', 'visible');
-    $map.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'visible')
+    // $map.setLayoutProperty('local-vs-tourist-scores-abridged-circles', 'visibility', 'none');
+    // $map.setLayoutProperty('local-vs-tourist-scores-abridged-text', 'visibility', 'none');
+    // $map.setLayoutProperty('local-vs-tourist-circles', 'visibility', 'visible');
+    // $map.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'visible')
   } else if (currentStep === 'slide4') {
     // console.log(currentStep)
 
@@ -416,7 +418,7 @@ function updateMap(el) {
 
   if (currentStep === 'slide1') {
     // console.log(currentStep)
-    $map.setLayoutProperty('local-vs-tourist-circles', 'visibility', 'visible');
+    // $map.setLayoutProperty('local-vs-tourist-circles', 'visibility', 'visible');
 
 
   } else if (currentStep === 'slide2') {
@@ -445,10 +447,10 @@ function updateMap(el) {
 
   } else if (currentStep === 'slide4') {
     stopTimesquare = false;
-    $map.setLayoutProperty('local-vs-tourist-circles', 'visibility', 'none');
-    $map.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'none')
-    $map.setLayoutProperty('local-vs-tourist-scores-abridged-circles', 'visibility', 'visible');
-    $map.setLayoutProperty('local-vs-tourist-scores-abridged-text', 'visibility', 'visible');
+    // $map.setLayoutProperty('local-vs-tourist-circles', 'visibility', 'none');
+    // $map.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'none')
+    // $map.setLayoutProperty('local-vs-tourist-scores-abridged-circles', 'visibility', 'visible');
+    // $map.setLayoutProperty('local-vs-tourist-scores-abridged-text', 'visibility', 'visible');
   } else if (currentStep === 'slide5') {
     // console.log(currentStep)
     $map.setLayoutProperty('local-vs-tourist-circles', 'visibility', 'none');
@@ -501,25 +503,64 @@ function makeMap() {
 
   const centerCooords = [40.119448, -98.056438]
 
-  const $map =
-    new mapboxgl.Map({
-      container: `map`,
-      center: [centerCooords[1], centerCooords[0]],
-      maxZoom: 17,
-      minZoom: 3,
-      dragPan: false,
-      scrollZoom: false,
-      style: 'mapbox://styles/dock4242/ck86bp6qk01jy1io6gzwfmxhb',
-      maxBounds: [
-        [-180, 0],
-        [-40, 75]
-      ],
-      zoom: 3.9,
-    });
+  //   const $map =
+  //     new mapboxgl.Map({
+  //       container: `map`,
+  //       center: [centerCooords[1], centerCooords[0]],
+  //       maxZoom: 17,
+  //       minZoom: 3,
+  //       dragPan: false,
+  //       scrollZoom: false,
+  //       style: 'mapbox://styles/dock4242/ck86bp6qk01jy1io6gzwfmxhb',
+  //       maxBounds: [
+  //         [-180, 0],
+  //         [-40, 75]
+  //       ],
+  //       zoom: 3.9,
+  //     });
 
 
-  $map.addControl(new mapboxgl.NavigationControl())
-  return $map
+  //   $map.addControl(new mapboxgl.NavigationControl())
+  //   return $map
+
+  const $beforeMap = new mapboxgl.Map({
+    container: 'before',
+    center: [centerCooords[1], centerCooords[0]],
+    maxZoom: 17,
+    minZoom: 3,
+    dragPan: false,
+    scrollZoom: false,
+    style: 'mapbox://styles/dock4242/ck8jdkvdj01e71io5umxeue26',
+    maxBounds: [
+      [-180, 0],
+      [-40, 75]
+    ],
+    zoom: 3.9,
+  });
+
+  const $afterMap = new mapboxgl.Map({
+    container: 'after',
+    center: [centerCooords[1], centerCooords[0]],
+    maxZoom: 17,
+    minZoom: 3,
+    dragPan: false,
+    scrollZoom: false,
+    style: 'mapbox://styles/dock4242/ck9ydd3ta225y1ipjj63ttblk',
+    maxBounds: [
+      [-180, 0],
+      [-40, 75]
+    ],
+    zoom: 6.9,
+  });
+
+  const container = '#map'
+  const $map = new mapboxgl.Compare($beforeMap, $afterMap, container, {
+    // Set this to enable comparing two maps by mouse movement:
+    // orientation: 'horizontal',
+    // mousemove: true
+  });
+
+  return $afterMap
 
 }
 
@@ -528,12 +569,18 @@ function init() {
   setupDOM()
   $map = makeMap()
   $map.on('load', () => {
-    $map.setLayoutProperty('local-vs-tourist-circles', 'visibility', 'visible');
-    $map.setLayoutProperty('local-vs-tourist-scores-abridged-text', 'visibility', 'none');
-    $map.setLayoutProperty('local-vs-tourist-scores-abridged-circles', 'visibility', 'none');
-    $map.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'none');
-    $map.setLayoutProperty('local-tourist-alpaca-corner', 'visibility', 'none');
-    $map.setLayoutProperty('local-tourist-alpaca-corner-circles', 'visibility', 'none');
+
+    $map.flyTo({
+      zoom: 12.1,
+      center: [-73.993158, 40.737553]
+    })
+
+    // $map.setLayoutProperty('local-vs-tourist-circles', 'visibility', 'visible');
+    // $map.setLayoutProperty('local-vs-tourist-scores-abridged-text', 'visibility', 'none');
+    // $map.setLayoutProperty('local-vs-tourist-scores-abridged-circles', 'visibility', 'none');
+    // $map.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'none');
+    // $map.setLayoutProperty('local-tourist-alpaca-corner', 'visibility', 'none');
+    // $map.setLayoutProperty('local-tourist-alpaca-corner-circles', 'visibility', 'none');
   })
   $map.on('load', () => {
     setupEnterView()
