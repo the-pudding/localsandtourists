@@ -107,7 +107,7 @@ function setupExplore() {
 
     const pointFeatures = $map.queryRenderedFeatures(e.point)
     // const relevantLayer = ['local_vs_tourist_scores_abrid-1tqzb9']
-    const relevantLayer = ['local_vs_tourist_50-8tnca0']
+    const relevantLayer = ['all_locals_tourists-8w7k0h']
     const relevantFeature = pointFeatures.filter(item => relevantLayer.includes(item.sourceLayer))
 
     // console.log(relevantFeature)
@@ -124,11 +124,12 @@ function setupExplore() {
     $detailsTotal.text(attractionTotal)
 
     {
-      /* <span class='display--attraction-name'>${attractionName}</span> scores an average of <span class='display--rating'>${formatScore(attractionScore)}</span>, with */
+      // <span class='display--attraction-name'>${attractionName}</span> has a total of
     }
 
     const htmlString = attractionName == '' ? 'Hover over a destination to find out its rating and total number of reviews.' : `
-    <span class='display--attraction-name'>${attractionName}</span> has a total of
+    
+    <span class='display--attraction-name'>${attractionName}</span> scores an average of <span class='display--rating'>${formatScore(attractionScore)}</span>, with
     <span class='display--total'>${attractionTotal}</span> ratings.`;
 
     detailsBar.html(htmlString)
@@ -146,7 +147,7 @@ function setupExplore() {
 
     const pointFeatures = $map.queryRenderedFeatures(e.point)
     // const relevantLayer = ['local_vs_tourist_scores_abrid-1tqzb9']
-    const relevantLayer = ['local_vs_tourist_50-8tnca0']
+    const relevantLayer = ['all_locals_tourists-8w7k0h']
     const relevantFeature = pointFeatures.filter(item => relevantLayer.includes(item.sourceLayer))
 
     // console.log(relevantFeature)
@@ -573,7 +574,7 @@ function makeMap() {
     minZoom: 3,
     dragPan: false,
     scrollZoom: false,
-    style: 'mapbox://styles/dock4242/ck8jdkvdj01e71io5umxeue26?optimize=true', // optimize=true',
+    style: 'mapbox://styles/dock4242/cka4gpcor04481is1e30pmzc2?optimize=true', // optimize=true',
     maxBounds: [
       [-180, 0],
       [-40, 75]
@@ -588,7 +589,7 @@ function makeMap() {
     minZoom: 3,
     dragPan: false,
     scrollZoom: false,
-    style: 'mapbox://styles/dock4242/ck9ydd3ta225y1ipjj63ttblk?optimize=true', // optimize=true',
+    style: 'mapbox://styles/dock4242/cka4g5py203jk1iqs4cpx6b9e?optimize=true', // optimize=true',
     maxBounds: [
       [-180, 0],
       [-40, 75]
