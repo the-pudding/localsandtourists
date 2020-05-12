@@ -530,7 +530,7 @@ function makeMap() {
     minZoom: 3,
     dragPan: false,
     scrollZoom: false,
-    style: 'mapbox://styles/dock4242/ck8jdkvdj01e71io5umxeue26',
+    style: 'mapbox://styles/dock4242/ck8jdkvdj01e71io5umxeue26?optimize=true', // optimize=true',
     maxBounds: [
       [-180, 0],
       [-40, 75]
@@ -545,7 +545,7 @@ function makeMap() {
     minZoom: 3,
     dragPan: false,
     scrollZoom: false,
-    style: 'mapbox://styles/dock4242/ck9ydd3ta225y1ipjj63ttblk',
+    style: 'mapbox://styles/dock4242/ck9ydd3ta225y1ipjj63ttblk?optimize=true', // optimize=true',
     maxBounds: [
       [-180, 0],
       [-40, 75]
