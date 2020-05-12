@@ -6,6 +6,7 @@ import legend from 'd3-svg-legend'
 
 const height = window.innerHeight;
 let $map;
+let $beforeMap;
 let stopTimesquare = true
 
 let attractionName = ''
@@ -102,10 +103,11 @@ function setupExplore() {
   const $detailsTotal = d3.select('.display--total')
 
 
-  $map.on('mousemove', e => {
+  $beforeMap.on('mousemove', e => {
 
     const pointFeatures = $map.queryRenderedFeatures(e.point)
-    const relevantLayer = ['local_vs_tourist_scores_abrid-1tqzb9']
+    // const relevantLayer = ['local_vs_tourist_scores_abrid-1tqzb9']
+    const relevantLayer = ['local_vs_tourist_50-8tnca0']
     const relevantFeature = pointFeatures.filter(item => relevantLayer.includes(item.sourceLayer))
 
     // console.log(relevantFeature)
@@ -121,10 +123,51 @@ function setupExplore() {
     $detailsRating.text(attractionScore)
     $detailsTotal.text(attractionTotal)
 
-
+    {
+      /* <span class='display--attraction-name'>${attractionName}</span> scores an average of <span class='display--rating'>${formatScore(attractionScore)}</span>, with */
+    }
 
     const htmlString = attractionName == '' ? 'Hover over a destination to find out its rating and total number of reviews.' : `
-    <span class='display--attraction-name'>${attractionName}</span> scores an average of <span class='display--rating'>${formatScore(attractionScore)}</span>, with
+    <span class='display--attraction-name'>${attractionName}</span> has a total of
+    <span class='display--total'>${attractionTotal}</span> ratings.`;
+
+    detailsBar.html(htmlString)
+    // console.log($map.queryRenderedFeatures(e))
+    // const currentZoom = $map.getZoom()
+    // if (currentZoom > 12) {
+    //   $map.setLayoutProperty('local-vs-tourist-scores-text', 'visibility', 'none');
+    // } else if (currentZoom < 12) {
+    //   $map.setLayoutProperty('local-vs-tourist-scores-text', 'visibility', 'visible');
+    // }
+
+    // console.log(e.lngLat.wrap());
+  })
+  $map.on('mousemove', e => {
+
+    const pointFeatures = $map.queryRenderedFeatures(e.point)
+    // const relevantLayer = ['local_vs_tourist_scores_abrid-1tqzb9']
+    const relevantLayer = ['local_vs_tourist_50-8tnca0']
+    const relevantFeature = pointFeatures.filter(item => relevantLayer.includes(item.sourceLayer))
+
+    // console.log(relevantFeature)
+
+
+    if (relevantFeature.length > 0) {
+      attractionName = relevantFeature[0].properties.attraction_name
+      attractionScore = relevantFeature[0].properties.score
+      attractionTotal = relevantFeature[0].properties.total
+    }
+
+    $detailsAttractionName.text(attractionName)
+    $detailsRating.text(attractionScore)
+    $detailsTotal.text(attractionTotal)
+
+    {
+      /* <span class='display--attraction-name'>${attractionName}</span> scores an average of <span class='display--rating'>${formatScore(attractionScore)}</span>, with */
+    }
+
+    const htmlString = attractionName == '' ? 'Hover over a destination to find out its rating and total number of reviews.' : `
+    <span class='display--attraction-name'>${attractionName}</span> has a total of
     <span class='display--total'>${attractionTotal}</span> ratings.`;
 
     detailsBar.html(htmlString)
@@ -190,16 +233,16 @@ function setupExplore() {
 
   // FILTER ON PAGE CODE
 
-  let airports = [];
+  //   let airports = [];
 
-  // Create a popup, but don't add it to the map yet.
-  let popup = new mapboxgl.Popup({
-    closeButton: false
-  });
+  //   // Create a popup, but don't add it to the map yet.
+  //   let popup = new mapboxgl.Popup({
+  //     closeButton: false
+  //   });
 
 
-  let filterEl = document.getElementById('feature-filter');
-  let listingEl = document.getElementById('feature-listing');
+  //   let filterEl = document.getElementById('feature-filter');
+  //   let listingEl = document.getElementById('feature-listing');
 
 
   //   function renderListings(features) {
@@ -441,7 +484,7 @@ function updateMap(el) {
       .on('render', () => {
         if (stopTimesquare) {
           console.log(0)
-          $map.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'visible')
+          //   $map.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'visible')
         }
       })
 
@@ -453,7 +496,7 @@ function updateMap(el) {
     // $map.setLayoutProperty('local-vs-tourist-scores-abridged-text', 'visibility', 'visible');
   } else if (currentStep === 'slide5') {
     // console.log(currentStep)
-    $map.setLayoutProperty('local-vs-tourist-circles', 'visibility', 'none');
+    // $map.setLayoutProperty('local-vs-tourist-circles', 'visibility', 'none');
     d3.select('.legends-container').style('visibility', 'visible')
 
 
@@ -463,7 +506,7 @@ function updateMap(el) {
       center: [-73.993158, 40.737553]
     })
 
-    $map.setLayoutProperty('local-vs-tourist-scores-abridged-text', 'visibility', 'visible');
+    // $map.setLayoutProperty('local-vs-tourist-scores-abridged-text', 'visibility', 'visible');
   }
 
 
@@ -560,14 +603,16 @@ function makeMap() {
     // mousemove: true
   });
 
-  return $afterMap
+  return [$beforeMap, $afterMap]
 
 }
 
 function init() {
   resize()
   setupDOM()
-  $map = makeMap()
+  const maps = makeMap()
+  $map = maps[1]
+  $beforeMap = maps[0]
   $map.on('load', () => {
 
     $map.flyTo({
