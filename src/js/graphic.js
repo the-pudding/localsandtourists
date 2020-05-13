@@ -5,8 +5,8 @@ import legend from 'd3-svg-legend'
 // import MapboxCompare from 'mapbox-gl-compare';
 
 const height = window.innerHeight;
-let $map;
-let $beforeMap;
+let $localMap;
+let $touristMap;
 let stopTimesquare = true
 
 let attractionName = ''
@@ -80,14 +80,20 @@ function resize() {
     .style('height', `${height/2}px`)
 }
 
+function numberWithCommas(x) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
 function formatScore(score) {
+
   let returnedScore = score.toString()
   //   console.log(returnedScore)
 
   if (returnedScore.length > 4) {
     returnedScore = returnedScore.substring(0, 4)
   }
-  return (returnedScore + '⭐')
+  //   return (returnedScore + '⭐')
+  return (returnedScore + '/5')
 }
 
 function setupExplore() {
@@ -96,16 +102,18 @@ function setupExplore() {
   const detailsBar = d3.select('.attraction-detail-container')
   const $aboutButton = d3.select('.btn--about')
   const $aboutCloseButton = d3.select('.about-close')
-  //   const $mapOverlayList = d3.select('.map-overlay')
+  //   const $localMapOverlayList = d3.select('.map-overlay')
 
   const $detailsAttractionName = d3.select('.display--attraction-name')
   const $detailsRating = d3.select('.display--rating')
   const $detailsTotal = d3.select('.display--total')
 
 
-  $beforeMap.on('mousemove', e => {
+  $touristMap.on('mousemove', e => {
 
-    const pointFeatures = $map.queryRenderedFeatures(e.point)
+
+    console.log('touristMap')
+    const pointFeatures = $touristMap.queryRenderedFeatures(e.point)
     // const relevantLayer = ['local_vs_tourist_scores_abrid-1tqzb9']
     const relevantLayer = ['all_locals_tourists-8w7k0h']
     const relevantFeature = pointFeatures.filter(item => relevantLayer.includes(item.sourceLayer))
@@ -128,29 +136,27 @@ function setupExplore() {
     }
 
     const htmlString = attractionName == '' ? 'Hover over a destination to find out its rating and total number of reviews.' : `
-    
-    <span class='display--attraction-name'>${attractionName}</span> scores an average of <span class='display--rating'>${formatScore(attractionScore)}</span>, with
-    <span class='display--total'>${attractionTotal}</span> ratings.`;
+
+      <span class='display--attraction-name'>${attractionName}</span> scores an average of <span class='display--rating'>${formatScore(attractionScore)}</span>, with
+      <span class='display--total'>${numberWithCommas(attractionTotal)}</span> ratings.`;
 
     detailsBar.html(htmlString)
-    // console.log($map.queryRenderedFeatures(e))
-    // const currentZoom = $map.getZoom()
+    // console.log($localMap.queryRenderedFeatures(e))
+    // const currentZoom = $localMap.getZoom()
     // if (currentZoom > 12) {
-    //   $map.setLayoutProperty('local-vs-tourist-scores-text', 'visibility', 'none');
+    //   $localMap.setLayoutProperty('local-vs-tourist-scores-text', 'visibility', 'none');
     // } else if (currentZoom < 12) {
-    //   $map.setLayoutProperty('local-vs-tourist-scores-text', 'visibility', 'visible');
+    //   $localMap.setLayoutProperty('local-vs-tourist-scores-text', 'visibility', 'visible');
     // }
 
     // console.log(e.lngLat.wrap());
   })
-  $map.on('mousemove', e => {
+  $localMap.on('mousemove', e => {
 
-    const pointFeatures = $map.queryRenderedFeatures(e.point)
-    // const relevantLayer = ['local_vs_tourist_scores_abrid-1tqzb9']
+    const pointFeatures = $localMap.queryRenderedFeatures(e.point)
     const relevantLayer = ['all_locals_tourists-8w7k0h']
     const relevantFeature = pointFeatures.filter(item => relevantLayer.includes(item.sourceLayer))
 
-    // console.log(relevantFeature)
 
 
     if (relevantFeature.length > 0) {
@@ -163,29 +169,19 @@ function setupExplore() {
     $detailsRating.text(attractionScore)
     $detailsTotal.text(attractionTotal)
 
-    {
-      /* <span class='display--attraction-name'>${attractionName}</span> scores an average of <span class='display--rating'>${formatScore(attractionScore)}</span>, with */
-    }
+
 
     const htmlString = attractionName == '' ? 'Hover over a destination to find out its rating and total number of reviews.' : `
-    <span class='display--attraction-name'>${attractionName}</span> has a total of
-    <span class='display--total'>${attractionTotal}</span> ratings.`;
+    <span class='display--attraction-name'>${attractionName}</span> scores an average of <span class='display--rating'>${formatScore(attractionScore)}</span>, with
+    <span class='display--total'>${numberWithCommas(attractionTotal)}</span> ratings.`;
 
     detailsBar.html(htmlString)
-    // console.log($map.queryRenderedFeatures(e))
-    // const currentZoom = $map.getZoom()
-    // if (currentZoom > 12) {
-    //   $map.setLayoutProperty('local-vs-tourist-scores-text', 'visibility', 'none');
-    // } else if (currentZoom < 12) {
-    //   $map.setLayoutProperty('local-vs-tourist-scores-text', 'visibility', 'visible');
-    // }
 
-    // console.log(e.lngLat.wrap());
   })
 
   $exploreButton.on('click', () => {
 
-    // $mapOverlayList.classed('hidden', false)
+    // $localMapOverlayList.classed('hidden', false)
     // console.log(`length ${attractionName.length}`)
 
     $aboutButton.classed('hidden', false)
@@ -193,21 +189,21 @@ function setupExplore() {
 
     $storyButton.classed('hidden', false)
     d3.select('.story').classed('hidden', true)
-    $map.scrollZoom.enable()
-    $map.dragPan.enable()
+    $localMap.scrollZoom.enable()
+    $localMap.dragPan.enable()
 
     d3.select('header.is-sticky').classed('invisible', true)
   })
 
 
   $storyButton.on('click', () => {
-    // $mapOverlayList.classed('hidden', true)
+    // $localMapOverlayList.classed('hidden', true)
     $aboutButton.classed('hidden', true)
     detailsBar.classed('hidden', true)
     $storyButton.classed('hidden', true)
     d3.select('.story').classed('hidden', false)
-    $map.scrollZoom.disable()
-    $map.dragPan.disable()
+    $localMap.scrollZoom.disable()
+    $localMap.dragPan.disable()
 
     d3.select('header.is-sticky').classed('invisible', false)
   })
@@ -264,7 +260,7 @@ function setupExplore() {
   //           popup
   //             .setLngLat(feature.geometry.coordinates)
   //             .setText(`${prop.attraction_name}`)
-  //             .addTo($map);
+  //             .addTo($localMap);
   //         });
   //         listingEl.appendChild(item);
   //       });
@@ -282,7 +278,7 @@ function setupExplore() {
   //       filterEl.parentNode.style.display = 'none';
 
   //       // remove features filter
-  //       $map.setFilter('local-vs-tourist-scores-abridged-circles', ['has', 'attraction_name']);
+  //       $localMap.setFilter('local-vs-tourist-scores-abridged-circles', ['has', 'attraction_name']);
   //     }
   //   }
 
@@ -306,8 +302,8 @@ function setupExplore() {
   //     return uniqueFeatures;
   //   }
 
-  $map.on('moveend', function () {
-    // const features = $map.queryRenderedFeatures({
+  $localMap.on('moveend', function () {
+    // const features = $localMap.queryRenderedFeatures({
     //   layers: ['local-vs-tourist-scores-abridged-circles']
     // });
 
@@ -330,20 +326,20 @@ function setupExplore() {
   });
 
 
-  //   $map.on('mousemove', 'local-vs-tourist-scores-abridged-circles', (e) => {
+  //   $localMap.on('mousemove', 'local-vs-tourist-scores-abridged-circles', (e) => {
   //     // Change the cursor style as a UI indicator.
-  //     $map.getCanvas().style.cursor = 'pointer';
+  //     $localMap.getCanvas().style.cursor = 'pointer';
 
   //     // Populate the popup and set its coordinates based on the feature.
   //     var feature = e.features[0];
   //     popup
   //       .setLngLat(feature.geometry.coordinates)
   //       .setText(`${feature.properties.attraction_name}`)
-  //       .addTo($map);
+  //       .addTo($localMap);
   //   });
 
-  //   $map.on('mouseleave', 'local-vs-tourist-scores-abridged-circles', () => {
-  //     $map.getCanvas().style.cursor = '';
+  //   $localMap.on('mouseleave', 'local-vs-tourist-scores-abridged-circles', () => {
+  //     $localMap.getCanvas().style.cursor = '';
   //     popup.remove();
   //   });
 
@@ -364,7 +360,7 @@ function setupExplore() {
 
   //     // Set the filter to populate features into the layer.
   //     if (filtered.length) {
-  //       $map.setFilter('local-vs-tourist-scores-abridged-circles', [
+  //       $localMap.setFilter('local-vs-tourist-scores-abridged-circles', [
   //         'match',
   //         ['get', 'attraction_id'],
   //         filtered.map(function (feature) {
@@ -377,7 +373,7 @@ function setupExplore() {
   //       // passing an empty array to render an empty state
   //     } else if (filtered.length == 0) {
 
-  //       let features = $map.queryRenderedFeatures({
+  //       let features = $localMap.queryRenderedFeatures({
   //         layers: ['local-vs-tourist-scores-abridged-circles']
   //       });
 
@@ -407,23 +403,23 @@ function updateMapBack(el) {
   const currentStep = el.getAttribute('data-previous-step')
   if (currentStep === 'slide1') {
     // console.log(currentStep)
-    // $map.setLayoutProperty('local-tourist-alpaca-corner', 'visibility', 'none');
-    // $map.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'none');
-    // $map.setLayoutProperty('local-tourist-alpaca-corner-circles', 'visibility', 'none');
+    // $localMap.setLayoutProperty('local-tourist-alpaca-corner', 'visibility', 'none');
+    // $localMap.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'none');
+    // $localMap.setLayoutProperty('local-tourist-alpaca-corner-circles', 'visibility', 'none');
 
   } else if (currentStep === 'slide2') {
     // console.log(currentStep)
 
     const centerCooords = [40.119448, -98.056438]
 
-    $map.flyTo({
+    $localMap.flyTo({
       center: [centerCooords[1], centerCooords[0]],
       speed: 0.3,
       zoom: 3.9
     }).on('render', () => {
       if (stopTimesquare) {
         // console.log(0)
-        // $map.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'none')
+        // $localMap.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'none')
         stopTimesquare = false
       }
     })
@@ -433,14 +429,14 @@ function updateMapBack(el) {
     // console.log(currentStep)
   } else if (currentStep === 'slide3_5') {
     // console.log(currentStep)
-    // $map.setLayoutProperty('local-vs-tourist-scores-abridged-circles', 'visibility', 'none');
-    // $map.setLayoutProperty('local-vs-tourist-scores-abridged-text', 'visibility', 'none');
-    // $map.setLayoutProperty('local-vs-tourist-circles', 'visibility', 'visible');
-    // $map.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'visible')
+    // $localMap.setLayoutProperty('local-vs-tourist-scores-abridged-circles', 'visibility', 'none');
+    // $localMap.setLayoutProperty('local-vs-tourist-scores-abridged-text', 'visibility', 'none');
+    // $localMap.setLayoutProperty('local-vs-tourist-circles', 'visibility', 'visible');
+    // $localMap.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'visible')
   } else if (currentStep === 'slide4') {
     // console.log(currentStep)
 
-    $map.flyTo({
+    $localMap.flyTo({
       zoom: 10.8
     })
   } else if (currentStep === 'slide5') {
@@ -462,13 +458,13 @@ function updateMap(el) {
 
   if (currentStep === 'slide1') {
     // console.log(currentStep)
-    // $map.setLayoutProperty('local-vs-tourist-circles', 'visibility', 'visible');
+    // $localMap.setLayoutProperty('local-vs-tourist-circles', 'visibility', 'visible');
 
 
   } else if (currentStep === 'slide2') {
     // console.log(currentStep)
-    // $map.setLayoutProperty('local-tourist-alpaca-corner', 'visibility', 'visible');
-    // $map.setLayoutProperty('local-tourist-alpaca-corner-circles', 'visibility', 'visible');
+    // $localMap.setLayoutProperty('local-tourist-alpaca-corner', 'visibility', 'visible');
+    // $localMap.setLayoutProperty('local-tourist-alpaca-corner-circles', 'visibility', 'visible');
 
 
   } else if (currentStep === 'slide3') {
@@ -477,7 +473,7 @@ function updateMap(el) {
     const nycCoords = [40.767474, -73.970294]
     const nycZoom = 10.8
 
-    $map.flyTo({
+    $localMap.flyTo({
         center: [nycCoords[1], nycCoords[0]],
         speed: 0.7,
         zoom: nycZoom
@@ -485,29 +481,29 @@ function updateMap(el) {
       .on('render', () => {
         if (stopTimesquare) {
           console.log(0)
-          //   $map.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'visible')
+          //   $localMap.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'visible')
         }
       })
 
   } else if (currentStep === 'slide4') {
     stopTimesquare = false;
-    // $map.setLayoutProperty('local-vs-tourist-circles', 'visibility', 'none');
-    // $map.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'none')
-    // $map.setLayoutProperty('local-vs-tourist-scores-abridged-circles', 'visibility', 'visible');
-    // $map.setLayoutProperty('local-vs-tourist-scores-abridged-text', 'visibility', 'visible');
+    // $localMap.setLayoutProperty('local-vs-tourist-circles', 'visibility', 'none');
+    // $localMap.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'none')
+    // $localMap.setLayoutProperty('local-vs-tourist-scores-abridged-circles', 'visibility', 'visible');
+    // $localMap.setLayoutProperty('local-vs-tourist-scores-abridged-text', 'visibility', 'visible');
   } else if (currentStep === 'slide5') {
     // console.log(currentStep)
-    // $map.setLayoutProperty('local-vs-tourist-circles', 'visibility', 'none');
+    // $localMap.setLayoutProperty('local-vs-tourist-circles', 'visibility', 'none');
     d3.select('.legends-container').style('visibility', 'visible')
 
 
 
-    $map.flyTo({
+    $localMap.flyTo({
       zoom: 12.1,
       center: [-73.993158, 40.737553]
     })
 
-    // $map.setLayoutProperty('local-vs-tourist-scores-abridged-text', 'visibility', 'visible');
+    // $localMap.setLayoutProperty('local-vs-tourist-scores-abridged-text', 'visibility', 'visible');
   }
 
 
@@ -547,7 +543,7 @@ function makeMap() {
 
   const centerCooords = [40.119448, -98.056438]
 
-  //   const $map =
+  //   const $localMap =
   //     new mapboxgl.Map({
   //       container: `map`,
   //       center: [centerCooords[1], centerCooords[0]],
@@ -564,11 +560,11 @@ function makeMap() {
   //     });
 
 
-  //   $map.addControl(new mapboxgl.NavigationControl())
-  //   return $map
+  //   $localMap.addControl(new mapboxgl.NavigationControl())
+  //   return $localMap
 
-  const $beforeMap = new mapboxgl.Map({
-    container: 'before',
+  const $touristMap = new mapboxgl.Map({
+    container: 'tourist',
     center: [centerCooords[1], centerCooords[0]],
     maxZoom: 17,
     minZoom: 3,
@@ -582,8 +578,9 @@ function makeMap() {
     zoom: 3.9,
   });
 
-  const $afterMap = new mapboxgl.Map({
-    container: 'after',
+
+  const $localMap = new mapboxgl.Map({
+    container: 'local',
     center: [centerCooords[1], centerCooords[0]],
     maxZoom: 17,
     minZoom: 3,
@@ -594,17 +591,17 @@ function makeMap() {
       [-180, 0],
       [-40, 75]
     ],
-    zoom: 6.9,
+    zoom: 3.9,
   });
 
   const container = '#map'
-  const $map = new mapboxgl.Compare($beforeMap, $afterMap, container, {
+  const $map = new mapboxgl.Compare($touristMap, $localMap, container, {
     // Set this to enable comparing two maps by mouse movement:
     // orientation: 'horizontal',
     // mousemove: true
   });
 
-  return [$beforeMap, $afterMap]
+  return [$touristMap, $localMap]
 
 }
 
@@ -612,23 +609,22 @@ function init() {
   resize()
   setupDOM()
   const maps = makeMap()
-  $map = maps[1]
-  $beforeMap = maps[0]
-  $map.on('load', () => {
+  $localMap = maps[1]
+  $touristMap = maps[0]
+  $localMap.on('load', () => {
+    // $localMap.flyTo({
+    //   zoom: 12.1,
+    //   center: [-73.993158, 40.737553]
+    // })
 
-    $map.flyTo({
-      zoom: 12.1,
-      center: [-73.993158, 40.737553]
-    })
-
-    // $map.setLayoutProperty('local-vs-tourist-circles', 'visibility', 'visible');
-    // $map.setLayoutProperty('local-vs-tourist-scores-abridged-text', 'visibility', 'none');
-    // $map.setLayoutProperty('local-vs-tourist-scores-abridged-circles', 'visibility', 'none');
-    // $map.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'none');
-    // $map.setLayoutProperty('local-tourist-alpaca-corner', 'visibility', 'none');
-    // $map.setLayoutProperty('local-tourist-alpaca-corner-circles', 'visibility', 'none');
+    // $localMap.setLayoutProperty('local-vs-tourist-circles', 'visibility', 'visible');
+    // $localMap.setLayoutProperty('local-vs-tourist-scores-abridged-text', 'visibility', 'none');
+    // $localMap.setLayoutProperty('local-vs-tourist-scores-abridged-circles', 'visibility', 'none');
+    // $localMap.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'none');
+    // $localMap.setLayoutProperty('local-tourist-alpaca-corner', 'visibility', 'none');
+    // $localMap.setLayoutProperty('local-tourist-alpaca-corner-circles', 'visibility', 'none');
   })
-  $map.on('load', () => {
+  $localMap.on('load', () => {
     setupEnterView()
   })
   //   makeLegends()
