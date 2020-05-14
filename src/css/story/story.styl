@@ -180,11 +180,11 @@
     // left: 1%
     // margin-top 3rem
     background-color: #44a5eb
-    top 1rem
-    padding-top: 2rem
+    top 0
+    // padding-top: 2rem   
     z-index: 1
     @media (max-width: 550px)
-        padding-top: 2rem
+        top: 4rem
     
         
 
@@ -240,6 +240,7 @@
     font-weight: 800
     text-transform: capitalize
     font-family 'National 2 Web'
+    
 
 .hidden
     display: none
@@ -265,6 +266,9 @@
     color #131671;
     font-weight: 800
     cursor: pointer;
+    display: none
+    flex-direction: column
+    justify-content: center
 
 .attraction-detail-container
     -webkit-box-shadow: 2px 3px 5px 0px rgba(0,0,0,0.75);
@@ -431,3 +435,6 @@
     top 0
     bottom 0
     width 100%
+
+// .mapboxgl-compare
+    // display none    
