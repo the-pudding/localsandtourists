@@ -589,6 +589,7 @@ function updateMap(el) {
     stopTimesquare = false;
 
 
+
     $compareMap.setSlider(0)
 
     // let i = 1;
