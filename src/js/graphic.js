@@ -607,7 +607,7 @@ function updateMap(el) {
 
     // swipeToLocals()
 
-    $localMap.invalidateSize();
+    // $localMap.invalidateSize();
 
 
 
