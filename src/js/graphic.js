@@ -713,20 +713,18 @@ function init() {
   $touristMap = maps[0]
 
 
+  $touristMap.on('load', () => {
+    $touristMap.scrollZoom.disable()
+    $compareMap.setSlider(width)
+    console.log($compareMap.currentPosition)
+    //   d3.select('.mapboxgl-compare').classed('hidden', true)
+    setupEnterView()
+  })
+
 
   $localMap.on('load', () => {
 
-    $touristMap.on('load', () => {
-      $touristMap.scrollZoom.disable()
-      $compareMap.setSlider(width)
-      console.log($compareMap.currentPosition)
-      //   d3.select('.mapboxgl-compare').classed('hidden', true)
-      setupEnterView()
-    })
-
     $localMap.scrollZoom.disable()
-
-
     // $localMap.flyTo({
     //   zoom: 12.1,
     //   center: [-73.993158, 40.737553]
