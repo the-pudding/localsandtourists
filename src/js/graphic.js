@@ -13,7 +13,11 @@ let attractionScore = ''
 let attractionTotal = ''
 let compareGraphicBuilt = false;
 let width;
+
+let mapSelected = "local";
 const nycCoords = [40.767474, -73.970294]
+const centerCooords = [40.119448, -98.056438]
+
 const nycZoom = 10.8
 
 let storyZindex;
@@ -24,6 +28,23 @@ let changeZindex = false;
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function changeShownMap(){
+  if(mapSelected == "tourist"){
+    $touristMap.setCenter($localMap.getCenter());
+    $touristMap.setZoom($localMap.getZoom())
+
+    d3.select("#local").style("display",null);
+    d3.select("#tourist").style("display",null);
+  }
+  else if(mapSelected == "local") {
+    $localMap.setCenter($touristMap.getCenter());
+    $localMap.setZoom($touristMap.getZoom())
+
+    d3.select("#local").style("display","block");
+    d3.select("#tourist").style("display","none");
+  }
 }
 
 function makeLegends() {
@@ -54,25 +75,6 @@ function makeLegends() {
     .scale(thresholdScale)
 }
 
-
-function swipeToTourists() {
-  let i = 1;
-  setInterval(function () {
-    i += 2;
-    if (i < width) {
-      // $compareMap.setSlider(i)
-    }
-  }, 1)
-
-
-  // $compareMap.setSlider(width)
-  //
-  // if ($compareMap.currentPosition > 0.9 * width) {
-  //   d3.select('.mapboxgl-compare').classed('hidden', true)
-  // }
-}
-
-
 function resize() {
 
 
@@ -82,7 +84,12 @@ function resize() {
   console.log(height)
 
   d3.selectAll('.story-step')
-    .style('height', `${height}px`)
+    .style('height', function(d,i){
+      if(i == d3.selectAll('.story-step').size() - 1){
+        return height*3/4+"px";
+      }
+      return height+"px"
+    })
 
   d3.select('html')
     .style('width', `${width}px`)
@@ -94,8 +101,16 @@ function resize() {
   d3.select('.v2-cover-text')
     .style('height', `${height}px`)
 
-  d3.select('.title-text')
-    .style('height', `${height/2}px`)
+
+  if($touristMap){
+    $touristMap.resize();
+  }
+  if($localMap){
+    $localMap.resize();
+  }
+
+  // d3.select('.title-text')
+  //   .style('height', `${height/2}px`)
 
   //d3.select('.subhed')
     //.style('height', "100px")//`${height/2}px`)
@@ -118,7 +133,7 @@ function formatScore(score) {
 }
 
 function setupExplore() {
-  const $exploreButton = d3.select('[data-step="slide5"]').select('.story-text')
+  const $exploreButton = d3.select('[data-step="slide6"]').select('.story-text')
   const $storyButton = d3.select('.btn--to-story')
   const $toggle = d3.select('.btn--map-select').selectAll("p");
   const detailsBar = d3.select('.attraction-detail-container')
@@ -133,12 +148,10 @@ function setupExplore() {
 
   $touristMap.on('mousemove', e => {
 
-
     console.log('touristMap')
     const pointFeatures = $touristMap.queryRenderedFeatures(e.point)
     const relevantLayer = ['all_locals_tourists-8w7k0h']
     const relevantFeature = pointFeatures.filter(item => relevantLayer.includes(item.sourceLayer))
-
 
     if (relevantFeature.length > 0) {
       attractionName = relevantFeature[0].properties.attraction_name
@@ -197,6 +210,13 @@ function setupExplore() {
 
     d3.select('.btn--map-select').style('display', 'flex');
 
+    $touristMap.setCenter([centerCooords[1], centerCooords[0]]);
+    $touristMap.setZoom(3.9);
+
+    $localMap.setCenter([centerCooords[1], centerCooords[0]]);
+    $localMap.setZoom(3.9);
+
+
     // d3.select('header.is-sticky').classed('invisible', true)
 
     // let storyZindex = parseInt(d3.select('.story').style('z-index'))
@@ -210,7 +230,7 @@ function setupExplore() {
     changeZindex = true;
 
     $aboutButton.classed('hidden', true)
-    detailsBar.classed('hidden', true)
+    // detailsBar.classed('hidden', true)
     $storyButton.style('display', 'none')
     d3.select('.btn--map-select').style('display', null);
 
@@ -220,6 +240,15 @@ function setupExplore() {
     $localMap.dragPan.disable()
     $touristMap.scrollZoom.disable()
     $touristMap.dragPan.disable()
+
+    mapSelected = "local"
+    changeShownMap();
+
+    $touristMap.setCenter([nycCoords[1], nycCoords[0]]);
+    $touristMap.setZoom(nycZoom);
+
+    $localMap.setCenter([nycCoords[1], nycCoords[0]]);
+    $localMap.setZoom(nycZoom);
 
     //d3.select('header.is-sticky').classed('invisible', false)
 
@@ -241,15 +270,23 @@ function setupExplore() {
   })
 
   $toggle.classed("selected",function(d,i){
-    if(i==0){
+    if(i==1){
       return true;
     }
     return false
   })
 
-  $toggle.on('click', function(d){
+  $toggle.on('click', function(d,i){
     $toggle.classed("selected",false)
     d3.select(this).classed("selected",true);
+    if(i==0){
+      mapSelected = "tourist"
+      changeShownMap();
+    }
+    else {
+      mapSelected = "local";
+      changeShownMap();
+    }
   });
 
   d3.selectAll('.story-step')
@@ -269,13 +306,11 @@ function updateMapBack(el) {
     // $localMap.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'none');
     // $localMap.setLayoutProperty('local-tourist-alpaca-corner-circles', 'visibility', 'none');
 
-  } else if (currentStep === 'slide2') {
-
-    const centerCooords = [40.119448, -98.056438]
+  }
+  else if (currentStep === 'slide2') {
 
     $touristMap.flyTo({
       center: [centerCooords[1], centerCooords[0]],
-      speed: 0.3,
       zoom: 3.9
     }).on('render', () => {
       if (stopTimesquare) {
@@ -285,16 +320,13 @@ function updateMapBack(el) {
       }
     })
 
-  } else if (currentStep === 'slide3') {
-    console.log(currentStep)
-  } else if (currentStep === 'slide3_5') {
+  }
+  else if (currentStep === 'slide3') {
     if(compareGraphicBuilt){
       removeCompare("right");
     }
-    swipeToTourists()
-
-  } else if (currentStep === 'slide4') {
-
+  }
+  else if (currentStep === 'slide3_5') {
 
     $touristMap.stop()
     $touristMap.setCenter([nycCoords[1], nycCoords[0]])
@@ -305,6 +337,9 @@ function updateMapBack(el) {
     if(!compareGraphicBuilt){
       createCompare("tourist");
     }
+  } else if (currentStep === 'slide4') {
+
+
   } else if (currentStep === 'slide5') {
     console.log(currentStep)
   }
@@ -345,6 +380,7 @@ function removeCompare(mapDirection){
       compareGraphicBuilt = false;
       if(mapDirection == "right"){
         d3.select("#local").style("display",null);
+        $touristMap.resize();
       }
       else {
         d3.select("#tourist").style("display","none");
@@ -354,6 +390,24 @@ function removeCompare(mapDirection){
 
 
 }
+
+function slideCompare(amount){
+
+  var sliderScale = d3.scalePow().domain([0,499]).range([$compareMap.currentPosition,amount*width]).exponent(3);
+  // if($compareMap.currentPosition > amount*width){
+  //   sliderScale.range([$compareMap.currentPosition,amount*width])
+  // }
+
+  var t = d3.timer(function(elapsed) {
+    $compareMap.setSlider(sliderScale(elapsed))
+    if (elapsed > 499){
+      t.stop();
+      $touristMap.resize();
+      $localMap.resize();
+    }
+  }, 500);
+}
+
 
 
 
@@ -398,7 +452,8 @@ function updateMap(el) {
     // $localMap.setLayoutProperty('local-vs-tourist-circles', 'visibility', 'visible');
 
 
-  } else if (currentStep === 'slide2') {
+  }
+  else if (currentStep === 'slide2') {
     // $localMap.setLayoutProperty('local-tourist-alpaca-corner', 'visibility', 'visible');
     // $localMap.setLayoutProperty('local-tourist-alpaca-corner-circles', 'visibility', 'visible');
 
@@ -410,9 +465,9 @@ function updateMap(el) {
 
     $touristMap.flyTo({
         center: [nycCoords[1], nycCoords[0]],
-        speed: 0.7,
         zoom: nycZoom
       })
+
       // .on('render', () => {
       //   if (stopTimesquare) {
       //     //   $localMap.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'visible')
@@ -421,7 +476,8 @@ function updateMap(el) {
 
     // $localMap.setLayoutProperty('min-9-zoom-all_reviews', 'visibility', 'none');
 
-  } else if (currentStep === 'slide4') {
+  }
+  else if (currentStep == 'slide3_5'){
     $touristMap.stop()
     $touristMap.setCenter([nycCoords[1], nycCoords[0]])
     $touristMap.setZoom(nycZoom)
@@ -431,50 +487,28 @@ function updateMap(el) {
     if(!compareGraphicBuilt){
       createCompare("tourist");
     }
-
-    // let i = 1;
-
-    // function swipeToLocals() {
-    //   setInterval(function () {
-    //     i += 5;
-    //     if (i < width) {
-    //       console.log($compareMap.currentPosition)
-    //
-    //     }
-    //   }, 0.5)
-    //   console.log($compareMap.currentPosition)
-    // }
-
-
-    // swipeToLocals()
-
-    // $localMap.invalidateSize();
-
-
-
-
     d3.select('.mapboxgl-compare').classed('hidden', false)
-
-  } else if (currentStep === 'slide5') {
+  }
+  else if (currentStep === 'slide4') {
+    if(compareGraphicBuilt){
+      slideCompare(.2);
+    }
+  }
+  else if (currentStep === 'slide5') {
+  }
+  else if (currentStep == 'slide6'){
     if(compareGraphicBuilt){
       removeCompare("left");
     }
-    d3.select('.legends-container').style('visibility', 'visible')
-
-
     $localMap.resize()
+    $localMap.flyTo({
+      center: [centerCooords[1], centerCooords[0]],
+      zoom: 3.9
+    })
 
-    // $localMap.flyTo({
-    //   zoom: 12.1,
-    //   center: [-73.993158, 40.737553]
-    // })
-
+    d3.select('.legends-container').style('visibility', 'visible')
   }
-
-
-
 }
-
 
 function setupEnterView() {
 
@@ -498,13 +532,18 @@ function setupDOM() {
 
   d3.select('#map')
     .style('height', `${height}px`)
+
+  d3.selectAll(".story-step").style("margin-top",function(d,i){
+    if(i==0){
+      return -height/3+"px"
+    }
+    return null;
+  })
 }
 
 function makeMap() {
   mapboxgl.accessToken =
     'pk.eyJ1IjoiZG9jazQyNDIiLCJhIjoiY2thZWxrN3cxMDVpYTJ0bXZwenI2ZXl1ZCJ9.E0ICxBW96VVQbnQqyRTWbA';
-
-  const centerCooords = [40.119448, -98.056438]
 
   $touristMap = new mapboxgl.Map({
     container: 'tourist',
