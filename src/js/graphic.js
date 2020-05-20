@@ -1,5 +1,4 @@
 /* global d3 */
-
 import enterView from 'enter-view'
 import legend from 'd3-svg-legend'
 
@@ -12,8 +11,10 @@ let stopTimesquare = true
 let attractionName = ''
 let attractionScore = ''
 let attractionTotal = ''
-
+let compareGraphicBuilt = false;
 let width;
+const nycCoords = [40.767474, -73.970294]
+const nycZoom = 10.8
 
 let storyZindex;
 let storyStepZindex;
@@ -51,6 +52,24 @@ function makeLegends() {
     .labels(d3.legendHelpers.thresholdLabels)
     .useClass(true)
     .scale(thresholdScale)
+}
+
+
+function swipeToTourists() {
+  let i = 1;
+  setInterval(function () {
+    i += 2;
+    if (i < width) {
+      // $compareMap.setSlider(i)
+    }
+  }, 1)
+
+
+  // $compareMap.setSlider(width)
+  //
+  // if ($compareMap.currentPosition > 0.9 * width) {
+  //   d3.select('.mapboxgl-compare').classed('hidden', true)
+  // }
 }
 
 
@@ -178,11 +197,11 @@ function setupExplore() {
 
     d3.select('.btn--map-select').style('display', 'flex');
 
-    d3.select('header.is-sticky').classed('invisible', true)
+    // d3.select('header.is-sticky').classed('invisible', true)
 
-    let storyZindex = parseInt(d3.select('.story').style('z-index'))
-    let storyStepZindex = parseInt(d3.selectAll('.story-step').style('z-index'))
-    let mapZindex = parseInt(d3.select('#map').style('z-index'))
+    // let storyZindex = parseInt(d3.select('.story').style('z-index'))
+    // let storyStepZindex = parseInt(d3.selectAll('.story-step').style('z-index'))
+    // let mapZindex = parseInt(d3.select('#map').style('z-index'))
 
 
   })
@@ -202,16 +221,12 @@ function setupExplore() {
     $touristMap.scrollZoom.disable()
     $touristMap.dragPan.disable()
 
-    d3.select('header.is-sticky').classed('invisible', false)
+    //d3.select('header.is-sticky').classed('invisible', false)
 
 
-    d3.select('.story').style('z-index', `${storyZindex+1}`)
-    d3.selectAll('.story-step').style('z-index', `${storyStepZindex+1}`)
-    d3.select('#map').style('z-index', `${mapZindex-1}`)
-
-    console.log(d3.select('.story').style('z-index'))
-    console.log(d3.selectAll('.story-step').style('z-index'))
-    console.log(d3.select('#map').style('z-index'))
+    // d3.select('.story').style('z-index', `${storyZindex+1}`)
+    // d3.selectAll('.story-step').style('z-index', `${storyStepZindex+1}`)
+    // d3.select('#map').style('z-index', `${mapZindex-1}`)
   })
 
   $aboutButton.on('click', () => {
@@ -245,7 +260,6 @@ function setupExplore() {
   }
 }
 
-
 function updateMapBack(el) {
 
   const currentStep = el.getAttribute('data-previous-step')
@@ -271,46 +285,74 @@ function updateMapBack(el) {
       }
     })
 
-
   } else if (currentStep === 'slide3') {
     console.log(currentStep)
   } else if (currentStep === 'slide3_5') {
-    console.log(currentStep)
-
-
-    function swipeToTourists() {
-      let i = 1;
-      setInterval(function () {
-        i += 2;
-        if (i < width) {
-          // $compareMap.setSlider(i)
-        }
-      }, 1)
-
-
-      // $compareMap.setSlider(width)
-      //
-      // if ($compareMap.currentPosition > 0.9 * width) {
-      //   d3.select('.mapboxgl-compare').classed('hidden', true)
-      // }
+    if(compareGraphicBuilt){
+      removeCompare("right");
     }
-
     swipeToTourists()
 
   } else if (currentStep === 'slide4') {
 
 
+    $touristMap.stop()
+    $touristMap.setCenter([nycCoords[1], nycCoords[0]])
+    $touristMap.setZoom(nycZoom)
+    stopTimesquare = false;
+    $touristMap.resize();
 
-
-
-
-
-    $localMap.flyTo({
-      zoom: 10.8
-    })
+    if(!compareGraphicBuilt){
+      createCompare("tourist");
+    }
   } else if (currentStep === 'slide5') {
     console.log(currentStep)
   }
+}
+
+function createCompare(match){
+  d3.select("#local").style("display","block");
+  d3.select("#tourist").style("display",null);
+
+  if(match == "tourist"){
+    $localMap.setCenter($touristMap.getCenter());
+    $localMap.setZoom($touristMap.getZoom())
+  }
+  else{
+    $touristMap.setCenter(localMap.getCenter());
+    $touristMap.setZoom($localMap.getZoom())
+  }
+
+
+  $compareMap = new mapboxgl.Compare($touristMap,$localMap,"#compare-container");
+  $localMap.resize();
+  $touristMap.resize();
+  compareGraphicBuilt = true;
+}
+
+function removeCompare(mapDirection){
+
+  var sliderScale = d3.scalePow().domain([0,499]).range([$compareMap.currentPosition,width]).exponent(3);
+  if(mapDirection == "left"){
+    sliderScale.range([$compareMap.currentPosition,0])
+  }
+
+  var t = d3.timer(function(elapsed) {
+    $compareMap.setSlider(sliderScale(elapsed))
+    if (elapsed > 499){
+      t.stop();
+      $compareMap.remove();
+      compareGraphicBuilt = false;
+      if(mapDirection == "right"){
+        d3.select("#local").style("display",null);
+      }
+      else {
+        d3.select("#tourist").style("display","none");
+      }
+    }
+  }, 500);
+
+
 }
 
 
@@ -362,30 +404,33 @@ function updateMap(el) {
 
 
   } else if (currentStep === 'slide3') {
+
     console.log(currentStep)
     stopTimesquare = true;
-    const nycCoords = [40.767474, -73.970294]
-    const nycZoom = 10.8
 
     $touristMap.flyTo({
         center: [nycCoords[1], nycCoords[0]],
         speed: 0.7,
         zoom: nycZoom
       })
-      .on('render', () => {
-        if (stopTimesquare) {
-          //   $localMap.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'visible')
-        }
-      })
+      // .on('render', () => {
+      //   if (stopTimesquare) {
+      //     //   $localMap.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'visible')
+      //   }
+      // })
 
     // $localMap.setLayoutProperty('min-9-zoom-all_reviews', 'visibility', 'none');
 
   } else if (currentStep === 'slide4') {
-    console.log(currentStep)
+    $touristMap.stop()
+    $touristMap.setCenter([nycCoords[1], nycCoords[0]])
+    $touristMap.setZoom(nycZoom)
     stopTimesquare = false;
+    $touristMap.resize();
 
-
-    // $compareMap.setSlider(0)
+    if(!compareGraphicBuilt){
+      createCompare("tourist");
+    }
 
     // let i = 1;
 
@@ -411,7 +456,9 @@ function updateMap(el) {
     d3.select('.mapboxgl-compare').classed('hidden', false)
 
   } else if (currentStep === 'slide5') {
-    console.log(currentStep)
+    if(compareGraphicBuilt){
+      removeCompare("left");
+    }
     d3.select('.legends-container').style('visibility', 'visible')
 
 
@@ -431,6 +478,7 @@ function updateMap(el) {
 
 function setupEnterView() {
 
+  console.log('enter view setting up')
   enterView({
     selector: '.story-step',
     enter(el) {
@@ -454,83 +502,75 @@ function setupDOM() {
 
 function makeMap() {
   mapboxgl.accessToken =
-    'pk.eyJ1IjoiZG9jazQyNDIiLCJhIjoiY2pjazE5eTM2NDl2aDJ3cDUyeDlsb292NiJ9.Jr__XbmAolbLyzPDj7-8kQ';
+    'pk.eyJ1IjoiZG9jazQyNDIiLCJhIjoiY2thZWxrN3cxMDVpYTJ0bXZwenI2ZXl1ZCJ9.E0ICxBW96VVQbnQqyRTWbA';
 
   const centerCooords = [40.119448, -98.056438]
 
   $touristMap = new mapboxgl.Map({
     container: 'tourist',
     center: [centerCooords[1], centerCooords[0]],
-    // maxZoom: 17,
-    // minZoom: 3,
-    // dragPan: false,
-    // scrollZoom: false,
-    style: 'mapbox://styles/dock4242/cka4gpcor04481is1e30pmzc2',//?optimize=true', // optimize=true',
-    // maxBounds: [
-    //   [-180, 0],
-    //   [-40, 75]
-    // ],
-    zoom: 3,
+    maxZoom: 17,
+    minZoom: 3,
+    dragPan: false,
+    scrollZoom: false,
+    style: 'mapbox://styles/dock4242/cka4gpcor04481is1e30pmzc2?optimize=true', // optimize=true',
+    maxBounds: [
+      [-180, 0],
+      [-40, 75]
+    ],
+    zoom: 3.9,
   });
 
-  // const $localMap = new mapboxgl.Map({
-  //   container: 'local',
-  //   center: [centerCooords[1], centerCooords[0]],
-  //   maxZoom: 17,
-  //   minZoom: 3,
-  //   dragPan: false,
-  //   scrollZoom: false,
-  //   style: 'mapbox://styles/dock4242/cka4g5py203jk1iqs4cpx6b9e', // optimize=true',
-  //   maxBounds: [
-  //     [-180, 0],
-  //     [-40, 75]
-  //   ],
-  //   zoom: 3.9,
-  // });
+  $localMap = new mapboxgl.Map({
+    container: 'local',
+    center: [centerCooords[1], centerCooords[0]],
+    maxZoom: 17,
+    minZoom: 3,
+    dragPan: false,
+    scrollZoom: false,
+    style: 'mapbox://styles/dock4242/cka4g5py203jk1iqs4cpx6b9e', // optimize=true',
+    maxBounds: [
+      [-180, 0],
+      [-40, 75]
+    ],
+    zoom: 3.9,
+  });
 
-  const container = '#map'
-  // $compareMap = new mapboxgl.Compare($touristMap, $localMap, container);
-
-  //return [$touristMap, null]
-
+  return [$touristMap, $localMap]
 }
 
 function init() {
   resize()
   setupDOM()
   const maps = makeMap()
-  //$localMap = maps[1]
-  //$touristMap = maps[0]
 
-  $touristMap.on('load', function(d){
-    console.log("loaded");
+  $touristMap.on('load', () => {
     $touristMap.resize();
-    // $touristMap.scrollZoom.disable()
-
+    $touristMap.scrollZoom.disable()
     // $compareMap.setSlider(width)
     //   d3.select('.mapboxgl-compare').classed('hidden', true)
-    // setupEnterView()
+    setupEnterView()
   })
 
 
-  // $localMap.on('load', () => {
-  //
-  //   $localMap.scrollZoom.disable()
-  //   // $localMap.flyTo({
-  //   //   zoom: 12.1,
-  //   //   center: [-73.993158, 40.737553]
-  //   // })
-  //
-  //   // $localMap.setLayoutProperty('local-vs-tourist-circles', 'visibility', 'visible');
-  //   // $localMap.setLayoutProperty('local-vs-tourist-scores-abridged-text', 'visibility', 'none');
-  //   // $localMap.setLayoutProperty('local-vs-tourist-scores-abridged-circles', 'visibility', 'none');
-  //   // $localMap.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'none');
-  //   // $localMap.setLayoutProperty('local-tourist-alpaca-corner', 'visibility', 'none');
-  //   // $localMap.setLayoutProperty('local-tourist-alpaca-corner-circles', 'visibility', 'none');
-  // })
-  //
-  // //   makeLegends()
-  // setupExplore()
+  $localMap.on('load', () => {
+
+    $localMap.scrollZoom.disable()
+    // $localMap.flyTo({
+    //   zoom: 12.1,
+    //   center: [-73.993158, 40.737553]
+    // })
+
+    // $localMap.setLayoutProperty('local-vs-tourist-circles', 'visibility', 'visible');
+    // $localMap.setLayoutProperty('local-vs-tourist-scores-abridged-text', 'visibility', 'none');
+    // $localMap.setLayoutProperty('local-vs-tourist-scores-abridged-circles', 'visibility', 'none');
+    // $localMap.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'none');
+    // $localMap.setLayoutProperty('local-tourist-alpaca-corner', 'visibility', 'none');
+    // $localMap.setLayoutProperty('local-tourist-alpaca-corner-circles', 'visibility', 'none');
+  })
+
+  //   makeLegends()
+  setupExplore()
 }
 
 
