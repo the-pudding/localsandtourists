@@ -148,9 +148,8 @@ function setupExplore() {
 
   $touristMap.on('mousemove', e => {
 
-    console.log('touristMap')
     const pointFeatures = $touristMap.queryRenderedFeatures(e.point)
-    const relevantLayer = ['all_locals_tourists-8w7k0h']
+    const relevantLayer = ['updated_all_locals_tourists-5mhfie']
     const relevantFeature = pointFeatures.filter(item => relevantLayer.includes(item.sourceLayer))
 
     if (relevantFeature.length > 0) {
@@ -173,7 +172,7 @@ function setupExplore() {
   $localMap.on('mousemove', e => {
 
     const pointFeatures = $localMap.queryRenderedFeatures(e.point)
-    const relevantLayer = ['all_locals_tourists-8w7k0h']
+    const relevantLayer = ['updated_all_locals_tourists-5mhfie']
     const relevantFeature = pointFeatures.filter(item => relevantLayer.includes(item.sourceLayer))
 
 
@@ -279,11 +278,11 @@ function setupExplore() {
   $toggle.on('click', function(d,i){
     $toggle.classed("selected",false)
     d3.select(this).classed("selected",true);
-    if(i==0){
+    if(i==0 && mapSelected != "tourist"){
       mapSelected = "tourist"
       changeShownMap();
     }
-    else {
+    else if (mapSelected != "local") {
       mapSelected = "local";
       changeShownMap();
     }

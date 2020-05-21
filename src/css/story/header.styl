@@ -9,12 +9,29 @@ header
 	padding-top 1rem
 	padding-bottom 1rem
 	height 4rem
+	@media (max-width: 600px)
+		justify-content space-between
+	.support-button
+		border none
+		color white
+		font-size 14px
+		font-weight: 400
+		border-radius: 11px;
+		padding: .5rem 1rem;
+		-webkit-font-smoothing: auto;
+		background: rgba(255, 255, 255, 0.12156)
+		position absolute
+		right 1.5rem
+		@media (max-width: 600px)
+			position relative
 
 	a.logo
 		display block
 		border none
 		max-width 9rem
 		margin 1rem auto
+		@media (max-width: 600px)
+			margin 0
 
 		svg
 			fill $off-black
@@ -28,10 +45,6 @@ header.is-sticky
 	// box-shadow 0 0 7px 1px $gray-light
 	display flex
 	align-items center
-
-	a.logo
-		margin 0 auto
-        height 50px
 
 	.header__toggle
 		position fixed
