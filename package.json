@@ -11,7 +11,7 @@
     "d3-svg-legend": "^2.25.6",
     "enter-view": "^2.0.0",
     "lodash.debounce": "4.0.8",
-    "mapbox-gl": "^1.10.0",
+    "mapbox-gl": "^1.10.1",
     "mapbox-gl-compare": "^0.4.0",
     "nouislider": "14.1.1",
     "superagent": "5.2.2"

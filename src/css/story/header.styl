@@ -6,31 +6,46 @@ header
 	width 100%
 	background-color $white
 	font-family $sans
+	padding-top 1rem
+	padding-bottom 1rem
+	height 4rem
+	@media (max-width: 600px)
+		justify-content space-between
+	.support-button
+		border none
+		color white
+		font-size 14px
+		font-weight: 400
+		border-radius: 11px;
+		padding: .5rem 1rem;
+		-webkit-font-smoothing: auto;
+		background: rgba(255, 255, 255, 0.12156)
+		position absolute
+		right 1.5rem
+		@media (max-width: 600px)
+			position relative
 
 	a.logo
 		display block
 		border none
 		max-width 9rem
 		margin 1rem auto
+		@media (max-width: 600px)
+			margin 0
 
 		svg
 			fill $off-black
 			display block
 			width 100%
-	
+
 header.is-sticky
-	position fixed
+	//position fixed
 	transform translate3d(0,0,0)
 	background-color rgb(17, 84, 132)
 	// box-shadow 0 0 7px 1px $gray-light
-	height 3rem
 	display flex
 	align-items center
-	
-	a.logo
-		margin 0 auto
-        height 50px
-	
+
 	.header__toggle
 		position fixed
 		transform translate3d(0,0,0)
@@ -40,17 +55,17 @@ header.is-sticky
 		cursor pointer
 		line-height 1
 		z-index set-index(overlay)
-		border none 
+		border none
 		background-color transparent
 		svg
 			stroke white
-		
+
 		span
 			&:first-of-type
 				display block
 			&:last-of-type
 				display none
-		
+
 		&.is-visible span
 			&:first-of-type
 				display none
@@ -150,9 +165,7 @@ header.is-sticky.is-dark
 	.header__toggle
 		svg
 			stroke $off-white
-		
+
 		&.is-visible span
 			svg
 				stroke $off-black
-
-

@@ -1,8 +1,6 @@
 /* global d3 */
 import enterView from 'enter-view'
 import legend from 'd3-svg-legend'
-// import mapboxgl from 'mapbox-gl';
-// import MapboxCompare from 'mapbox-gl-compare';
 
 const height = window.innerHeight;
 let $compareMap;
@@ -13,8 +11,14 @@ let stopTimesquare = true
 let attractionName = ''
 let attractionScore = ''
 let attractionTotal = ''
-
+let compareGraphicBuilt = false;
 let width;
+
+let mapSelected = "local";
+const nycCoords = [40.767474, -73.970294]
+const centerCooords = [40.119448, -98.056438]
+
+const nycZoom = 10.8
 
 let storyZindex;
 let storyStepZindex;
@@ -24,6 +28,23 @@ let changeZindex = false;
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function changeShownMap(){
+  if(mapSelected == "tourist"){
+    $touristMap.setCenter($localMap.getCenter());
+    $touristMap.setZoom($localMap.getZoom())
+
+    d3.select("#local").style("display",null);
+    d3.select("#tourist").style("display",null);
+  }
+  else if(mapSelected == "local") {
+    $localMap.setCenter($touristMap.getCenter());
+    $localMap.setZoom($touristMap.getZoom())
+
+    d3.select("#local").style("display","block");
+    d3.select("#tourist").style("display","none");
+  }
 }
 
 function makeLegends() {
@@ -38,16 +59,6 @@ function makeLegends() {
   svg.append("g")
     .attr("class", "legendSize")
     .attr("transform", "translate(20, 40)");
-
-  //   const legendSize = d3.legendSize()
-  //     .scale(linearSize)
-  //     .shape('circle')
-  //     .shapePadding(15)
-  //     .labelOffset(20)
-  //     .orient('horizontal');
-
-  //   svg.select(".legendSize")
-  //     .call(legendSize);
 
   const thresholdScale = d3.scaleThreshold()
     .domain([1, 2, 3, 4, 5])
@@ -64,18 +75,21 @@ function makeLegends() {
     .scale(thresholdScale)
 }
 
-
 function resize() {
 
 
   const height = window.innerHeight
   width = window.innerWidth
-  //   console.log(width)
 
   console.log(height)
 
   d3.selectAll('.story-step')
-    .style('height', `${height}px`)
+    .style('height', function(d,i){
+      if(i == d3.selectAll('.story-step').size() - 1){
+        return height*3/4+"px";
+      }
+      return height+"px"
+    })
 
   d3.select('html')
     .style('width', `${width}px`)
@@ -87,11 +101,19 @@ function resize() {
   d3.select('.v2-cover-text')
     .style('height', `${height}px`)
 
-  d3.select('.title-text')
-    .style('height', `${height/2}px`)
 
-  d3.select('.subhed')
-    .style('height', `${height/2}px`)
+  if($touristMap){
+    $touristMap.resize();
+  }
+  if($localMap){
+    $localMap.resize();
+  }
+
+  // d3.select('.title-text')
+  //   .style('height', `${height/2}px`)
+
+  //d3.select('.subhed')
+    //.style('height', "100px")//`${height/2}px`)
 }
 
 function numberWithCommas(x) {
@@ -111,8 +133,9 @@ function formatScore(score) {
 }
 
 function setupExplore() {
-  const $exploreButton = d3.select('[data-step="slide5"]').select('.story-text')
+  const $exploreButton = d3.select('[data-step="slide6"]').select('.story-text')
   const $storyButton = d3.select('.btn--to-story')
+  const $toggle = d3.select('.btn--map-select').selectAll("p");
   const detailsBar = d3.select('.attraction-detail-container')
   const $aboutButton = d3.select('.btn--about')
   const $aboutCloseButton = d3.select('.about-close')
@@ -125,15 +148,9 @@ function setupExplore() {
 
   $touristMap.on('mousemove', e => {
 
-
-    console.log('touristMap')
     const pointFeatures = $touristMap.queryRenderedFeatures(e.point)
-    // const relevantLayer = ['local_vs_tourist_scores_abrid-1tqzb9']
-    const relevantLayer = ['all_locals_tourists-8w7k0h']
+    const relevantLayer = ['updated_all_locals_tourists-5mhfie']
     const relevantFeature = pointFeatures.filter(item => relevantLayer.includes(item.sourceLayer))
-
-    // console.log(relevantFeature)
-
 
     if (relevantFeature.length > 0) {
       attractionName = relevantFeature[0].properties.attraction_name
@@ -145,30 +162,17 @@ function setupExplore() {
     $detailsRating.text(attractionScore)
     $detailsTotal.text(attractionTotal)
 
-    {
-      // <span class='display--attraction-name'>${attractionName}</span> has a total of
-    }
-
     const htmlString = attractionName == '' ? 'Hover over a destination to find out its rating and total number of reviews.' : `
 
       <span class='display--attraction-name'>${attractionName}</span> scores an average of <span class='display--rating'>${formatScore(attractionScore)}</span>, with
       <span class='display--total'>${numberWithCommas(attractionTotal)}</span> ratings.`;
 
     detailsBar.html(htmlString)
-    // console.log($localMap.queryRenderedFeatures(e))
-    // const currentZoom = $localMap.getZoom()
-    // if (currentZoom > 12) {
-    //   $localMap.setLayoutProperty('local-vs-tourist-scores-text', 'visibility', 'none');
-    // } else if (currentZoom < 12) {
-    //   $localMap.setLayoutProperty('local-vs-tourist-scores-text', 'visibility', 'visible');
-    // }
-
-    // console.log(e.lngLat.wrap());
   })
   $localMap.on('mousemove', e => {
 
     const pointFeatures = $localMap.queryRenderedFeatures(e.point)
-    const relevantLayer = ['all_locals_tourists-8w7k0h']
+    const relevantLayer = ['updated_all_locals_tourists-5mhfie']
     const relevantFeature = pointFeatures.filter(item => relevantLayer.includes(item.sourceLayer))
 
 
@@ -203,27 +207,32 @@ function setupExplore() {
     $touristMap.scrollZoom.enable()
     $touristMap.dragPan.enable()
 
-    d3.select('header.is-sticky').classed('invisible', true)
+    d3.select('.btn--map-select').style('display', 'flex');
+
+    $touristMap.setCenter([centerCooords[1], centerCooords[0]]);
+    $touristMap.setZoom(3.9);
+
+    $localMap.setCenter([centerCooords[1], centerCooords[0]]);
+    $localMap.setZoom(3.9);
 
 
+    // d3.select('header.is-sticky').classed('invisible', true)
 
-    let storyZindex = parseInt(d3.select('.story').style('z-index'))
-    let storyStepZindex = parseInt(d3.selectAll('.story-step').style('z-index'))
-    let mapZindex = parseInt(d3.select('#map').style('z-index'))
+    // let storyZindex = parseInt(d3.select('.story').style('z-index'))
+    // let storyStepZindex = parseInt(d3.selectAll('.story-step').style('z-index'))
+    // let mapZindex = parseInt(d3.select('#map').style('z-index'))
 
 
   })
 
-
-
-
   $storyButton.on('click', () => {
-    // $localMapOverlayList.classed('hidden', true)
     changeZindex = true;
 
     $aboutButton.classed('hidden', true)
-    detailsBar.classed('hidden', true)
+    // detailsBar.classed('hidden', true)
     $storyButton.style('display', 'none')
+    d3.select('.btn--map-select').style('display', null);
+
     d3.select('.story').classed('hidden', false)
     d3.select('.cover').classed('hidden', false)
     $localMap.scrollZoom.disable()
@@ -231,23 +240,21 @@ function setupExplore() {
     $touristMap.scrollZoom.disable()
     $touristMap.dragPan.disable()
 
-    d3.select('header.is-sticky').classed('invisible', false)
+    mapSelected = "local"
+    changeShownMap();
+
+    $touristMap.setCenter([nycCoords[1], nycCoords[0]]);
+    $touristMap.setZoom(nycZoom);
+
+    $localMap.setCenter([nycCoords[1], nycCoords[0]]);
+    $localMap.setZoom(nycZoom);
+
+    //d3.select('header.is-sticky').classed('invisible', false)
 
 
-    d3.select('.story').style('z-index', `${storyZindex+1}`)
-    d3.selectAll('.story-step').style('z-index', `${storyStepZindex+1}`)
-    d3.select('#map').style('z-index', `${mapZindex-1}`)
-
-    console.log(d3.select('.story').style('z-index'))
-    console.log(d3.selectAll('.story-step').style('z-index'))
-    console.log(d3.select('#map').style('z-index'))
-
-
-    // console.log(`${storyStepZindex}`)
-
-    // $compareMap.style('z-index', '0')
-    // d3.select('.story').style('z-index', '51')
-
+    // d3.select('.story').style('z-index', `${storyZindex+1}`)
+    // d3.selectAll('.story-step').style('z-index', `${storyStepZindex+1}`)
+    // d3.select('#map').style('z-index', `${mapZindex-1}`)
   })
 
   $aboutButton.on('click', () => {
@@ -261,202 +268,48 @@ function setupExplore() {
 
   })
 
+  $toggle.classed("selected",function(d,i){
+    if(i==1){
+      return true;
+    }
+    return false
+  })
+
+  $toggle.on('click', function(d,i){
+    $toggle.classed("selected",false)
+    d3.select(this).classed("selected",true);
+    if(i==0 && mapSelected != "tourist"){
+      mapSelected = "tourist"
+      changeShownMap();
+    }
+    else if (mapSelected != "local") {
+      mapSelected = "local";
+      changeShownMap();
+    }
+  });
+
   d3.selectAll('.story-step')
     .style('z-index', '5')
-
-
-
-
-
-
-
-  // FILTER ON PAGE CODE
-
-  //   let airports = [];
-
-  //   // Create a popup, but don't add it to the map yet.
-  //   let popup = new mapboxgl.Popup({
-  //     closeButton: false
-  //   });
-
-
-  //   let filterEl = document.getElementById('feature-filter');
-  //   let listingEl = document.getElementById('feature-listing');
-
-
-  //   function renderListings(features) {
-  //     let empty = document.createElement('p');
-  //     // Clear any existing listings
-  //     listingEl.innerHTML = '';
-  //     if (features.length) {
-
-  //       features.sort((a, b) => (+a.properties.score < +b.properties.score) ? 1 : ((+b.properties.score < +a.properties.score) ? -1 : 0)).forEach(function (feature) {
-  //         let prop = feature.properties;
-  //         // console.log(prop)
-  //         let item = document.createElement('a');
-  //         item.href = prop.attraction_name;
-  //         item.target = '_blank';
-  //         item.textContent = `${prop.attraction_name} (${formatScore(feature.properties.score)}, ${feature.properties.total} reviews)`;
-  //         item.addEventListener('mouseover', function () {
-  //           // Highlight corresponding feature on the map
-  //           popup
-  //             .setLngLat(feature.geometry.coordinates)
-  //             .setText(`${prop.attraction_name}`)
-  //             .addTo($localMap);
-  //         });
-  //         listingEl.appendChild(item);
-  //       });
-
-  //       // Show the filter input
-  //       filterEl.parentNode.style.display = 'block';
-  //     } else if (features.length === 0 && filterEl.value !== '') {
-  //       empty.textContent = 'No results found';
-  //       listingEl.appendChild(empty);
-  //     } else {
-  //       empty.textContent = 'Drag the map to populate results';
-  //       listingEl.appendChild(empty);
-
-  //       // Hide the filter input
-  //       filterEl.parentNode.style.display = 'none';
-
-  //       // remove features filter
-  //       $localMap.setFilter('local-vs-tourist-scores-abridged-circles', ['has', 'attraction_name']);
-  //     }
-  //   }
 
   function normalize(string) {
     return string.trim().toLowerCase();
   }
-
-  //   function getUniqueFeatures(array, comparatorProperty) {
-  //     var existingFeatureKeys = {};
-  //     // Because features come from tiled vector data, feature geometries may be split
-  //     // or duplicated across tile boundaries and, as a result, features may appear
-  //     // multiple times in query results.
-  //     var uniqueFeatures = array.filter(function (el) {
-  //       if (existingFeatureKeys[el.properties[comparatorProperty]]) {
-  //         return false;
-  //       } else {
-  //         existingFeatureKeys[el.properties[comparatorProperty]] = true;
-  //         return true;
-  //       }
-  //     });
-  //     return uniqueFeatures;
-  //   }
-
-  $localMap.on('moveend', function () {
-    // const features = $localMap.queryRenderedFeatures({
-    //   layers: ['local-vs-tourist-scores-abridged-circles']
-    // });
-
-    // console.log(features)
-
-    // if (features) {
-    //   const uniqueFeatures = getUniqueFeatures(features, 'attraction_id');
-
-    //   //   console.log(uniqueFeatures)
-    //   // Populate features for the listing overlay.
-    //   renderListings(uniqueFeatures);
-
-    //   // Clear the input container
-    //   filterEl.value = '';
-
-    //   // Store the current features in sn `airports` variable to
-    //   // later use for filtering on `keyup`.
-    //   airports = uniqueFeatures;
-    // }
-  });
-
-
-  //   $localMap.on('mousemove', 'local-vs-tourist-scores-abridged-circles', (e) => {
-  //     // Change the cursor style as a UI indicator.
-  //     $localMap.getCanvas().style.cursor = 'pointer';
-
-  //     // Populate the popup and set its coordinates based on the feature.
-  //     var feature = e.features[0];
-  //     popup
-  //       .setLngLat(feature.geometry.coordinates)
-  //       .setText(`${feature.properties.attraction_name}`)
-  //       .addTo($localMap);
-  //   });
-
-  //   $localMap.on('mouseleave', 'local-vs-tourist-scores-abridged-circles', () => {
-  //     $localMap.getCanvas().style.cursor = '';
-  //     popup.remove();
-  //   });
-
-
-  //   filterEl.addEventListener('keyup', function (e) {
-  //     let value = normalize(e.target.value);
-
-  //     // console.log(value)
-  //     // Filter visible features that don't match the input value.
-  //     let filtered = airports.filter(function (feature) {
-  //       let name = normalize(feature.properties.attraction_name);
-  //       //   let code = feature.properties.attraction_id;
-  //       return name.indexOf(value) > -1;
-  //     });
-
-  //     // Populate the sidebar with filtered results
-  //     // renderListings(filtered);
-
-  //     // Set the filter to populate features into the layer.
-  //     if (filtered.length) {
-  //       $localMap.setFilter('local-vs-tourist-scores-abridged-circles', [
-  //         'match',
-  //         ['get', 'attraction_id'],
-  //         filtered.map(function (feature) {
-  //           return feature.properties.attraction_id;
-  //         }),
-  //         true,
-  //         false
-  //       ]);
-  //       // Call this function on initialization
-  //       // passing an empty array to render an empty state
-  //     } else if (filtered.length == 0) {
-
-  //       let features = $localMap.queryRenderedFeatures({
-  //         layers: ['local-vs-tourist-scores-abridged-circles']
-  //       });
-
-
-  //       letuniqueFeatures = getUniqueFeatures(features, 'attraction_id');
-
-  //       renderListings([]);
-
-  //       //   console.log(uniqueFeatures)
-  //       // Populate features for the listing overlay.
-  //       renderListings(uniqueFeatures);
-
-  //       // Clear the input container
-  //       filterEl.value = '';
-
-  //       // Store the current features in sn `airports` variable to
-  //       // later use for filtering on `keyup`.
-  //       airports = uniqueFeatures;
-  //     }
-  //   });
-
-
 }
 
-
 function updateMapBack(el) {
+
   const currentStep = el.getAttribute('data-previous-step')
+  console.log(currentStep);
   if (currentStep === 'slide1') {
-    console.log(currentStep)
     // $localMap.setLayoutProperty('local-tourist-alpaca-corner', 'visibility', 'none');
     // $localMap.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'none');
     // $localMap.setLayoutProperty('local-tourist-alpaca-corner-circles', 'visibility', 'none');
 
-  } else if (currentStep === 'slide2') {
-    console.log(currentStep)
+  }
+  else if (currentStep === 'slide2') {
 
-    const centerCooords = [40.119448, -98.056438]
-
-    $localMap.flyTo({
+    $touristMap.flyTo({
       center: [centerCooords[1], centerCooords[0]],
-      speed: 0.3,
       zoom: 3.9
     }).on('render', () => {
       if (stopTimesquare) {
@@ -466,48 +319,94 @@ function updateMapBack(el) {
       }
     })
 
-
-  } else if (currentStep === 'slide3') {
-    console.log(currentStep)
-  } else if (currentStep === 'slide3_5') {
-    console.log(currentStep)
-
-
-    function swipeToTourists() {
-      let i = 1;
-      setInterval(function () {
-        i += 2;
-        if (i < width) {
-          //   console.log('hello');
-          $compareMap.setSlider(i)
-        }
-      }, 1)
-
-
-      $compareMap.setSlider(width)
-
-      if ($compareMap.currentPosition > 0.9 * width) {
-        d3.select('.mapboxgl-compare').classed('hidden', true)
-      }
+  }
+  else if (currentStep === 'slide3') {
+    if(compareGraphicBuilt){
+      removeCompare("right");
     }
+  }
+  else if (currentStep === 'slide3_5') {
 
-    swipeToTourists()
+    $touristMap.stop()
+    $touristMap.setCenter([nycCoords[1], nycCoords[0]])
+    $touristMap.setZoom(nycZoom)
+    stopTimesquare = false;
+    $touristMap.resize();
 
+    if(!compareGraphicBuilt){
+      createCompare("tourist");
+    }
   } else if (currentStep === 'slide4') {
 
 
-
-
-
-
-
-    $localMap.flyTo({
-      zoom: 10.8
-    })
   } else if (currentStep === 'slide5') {
     console.log(currentStep)
   }
 }
+
+function createCompare(match){
+  d3.select("#local").style("display","block");
+  d3.select("#tourist").style("display",null);
+
+  if(match == "tourist"){
+    $localMap.setCenter($touristMap.getCenter());
+    $localMap.setZoom($touristMap.getZoom())
+  }
+  else{
+    $touristMap.setCenter(localMap.getCenter());
+    $touristMap.setZoom($localMap.getZoom())
+  }
+
+
+  $compareMap = new mapboxgl.Compare($touristMap,$localMap,"#compare-container");
+  $localMap.resize();
+  $touristMap.resize();
+  compareGraphicBuilt = true;
+}
+
+function removeCompare(mapDirection){
+
+  var sliderScale = d3.scalePow().domain([0,499]).range([$compareMap.currentPosition,width]).exponent(3);
+  if(mapDirection == "left"){
+    sliderScale.range([$compareMap.currentPosition,0])
+  }
+
+  var t = d3.timer(function(elapsed) {
+    $compareMap.setSlider(sliderScale(elapsed))
+    if (elapsed > 499){
+      t.stop();
+      $compareMap.remove();
+      compareGraphicBuilt = false;
+      if(mapDirection == "right"){
+        d3.select("#local").style("display",null);
+        $touristMap.resize();
+      }
+      else {
+        d3.select("#tourist").style("display","none");
+      }
+    }
+  }, 500);
+
+
+}
+
+function slideCompare(amount){
+
+  var sliderScale = d3.scalePow().domain([0,499]).range([$compareMap.currentPosition,amount*width]).exponent(3);
+  // if($compareMap.currentPosition > amount*width){
+  //   sliderScale.range([$compareMap.currentPosition,amount*width])
+  // }
+
+  var t = d3.timer(function(elapsed) {
+    $compareMap.setSlider(sliderScale(elapsed))
+    if (elapsed > 499){
+      t.stop();
+      $touristMap.resize();
+      $localMap.resize();
+    }
+  }, 500);
+}
+
 
 
 
@@ -515,9 +414,6 @@ function updateMap(el) {
 
   storyZindex = +d3.selectAll('.story').style('z-index')
   storyStepZindex = +d3.selectAll('.story-step').style('z-index')
-
-  console.log(storyZindex)
-  console.log(storyStepZindex)
 
   if (changeZindex) {
     storyZindex += 1
@@ -540,13 +436,10 @@ function updateMap(el) {
       .style('z-index', '50')
   }
 
-
-
-
   const currentStep = el.getAttribute('data-step')
+  console.log(currentStep)
 
   if (currentStep === 'slide1') {
-    console.log(currentStep)
 
     // d3.selectAll('.story')
     //   .style('z-index', (storyZindex + 1))
@@ -558,82 +451,63 @@ function updateMap(el) {
     // $localMap.setLayoutProperty('local-vs-tourist-circles', 'visibility', 'visible');
 
 
-  } else if (currentStep === 'slide2') {
-    console.log(currentStep)
+  }
+  else if (currentStep === 'slide2') {
     // $localMap.setLayoutProperty('local-tourist-alpaca-corner', 'visibility', 'visible');
     // $localMap.setLayoutProperty('local-tourist-alpaca-corner-circles', 'visibility', 'visible');
 
 
   } else if (currentStep === 'slide3') {
+
     console.log(currentStep)
     stopTimesquare = true;
-    const nycCoords = [40.767474, -73.970294]
-    const nycZoom = 10.8
 
-    $localMap.flyTo({
+    $touristMap.flyTo({
         center: [nycCoords[1], nycCoords[0]],
-        speed: 0.7,
         zoom: nycZoom
       })
-      .on('render', () => {
-        if (stopTimesquare) {
-          //   console.log(0)
-          //   $localMap.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'visible')
-        }
-      })
+
+      // .on('render', () => {
+      //   if (stopTimesquare) {
+      //     //   $localMap.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'visible')
+      //   }
+      // })
 
     // $localMap.setLayoutProperty('min-9-zoom-all_reviews', 'visibility', 'none');
 
-  } else if (currentStep === 'slide4') {
-    console.log(currentStep)
-    stopTimesquare = false;
-
-
-    $compareMap.setSlider(0)
-
-    // let i = 1;
-
-    // function swipeToLocals() {
-    //   setInterval(function () {
-    //     i += 5;
-    //     if (i < width) {
-    //       console.log($compareMap.currentPosition)
-    //       
-    //     }
-    //   }, 0.5)
-    //   console.log($compareMap.currentPosition)
-    // }
-
-
-    // swipeToLocals()
-
-    // $localMap.invalidateSize();
-
-
-
-
-    d3.select('.mapboxgl-compare').classed('hidden', false)
-
-  } else if (currentStep === 'slide5') {
-    console.log(currentStep)
-    d3.select('.legends-container').style('visibility', 'visible')
-
-
-    $localMap.resize()
-
-
-
-    // $localMap.flyTo({
-    //   zoom: 12.1,
-    //   center: [-73.993158, 40.737553]
-    // })
-
   }
+  else if (currentStep == 'slide3_5'){
+    $touristMap.stop()
+    $touristMap.setCenter([nycCoords[1], nycCoords[0]])
+    $touristMap.setZoom(nycZoom)
+    stopTimesquare = false;
+    $touristMap.resize();
 
+    if(!compareGraphicBuilt){
+      createCompare("tourist");
+    }
+    d3.select('.mapboxgl-compare').classed('hidden', false)
+  }
+  else if (currentStep === 'slide4') {
+    if(compareGraphicBuilt){
+      slideCompare(.2);
+    }
+  }
+  else if (currentStep === 'slide5') {
+  }
+  else if (currentStep == 'slide6'){
+    if(compareGraphicBuilt){
+      removeCompare("left");
+    }
+    $localMap.resize()
+    $localMap.flyTo({
+      center: [centerCooords[1], centerCooords[0]],
+      zoom: 3.9
+    })
 
-
+    d3.select('.legends-container').style('visibility', 'visible')
+  }
 }
-
 
 function setupEnterView() {
 
@@ -647,7 +521,6 @@ function setupEnterView() {
       updateMapBack(el)
     },
     progress(el, progress) {
-      //   el.style.opacity = progress;
     },
     offset: 0.05, // enter at middle of viewport
     once: false, // trigger just once
@@ -656,18 +529,22 @@ function setupEnterView() {
 
 function setupDOM() {
 
-  console.log(height)
   d3.select('#map')
     .style('height', `${height}px`)
+
+  d3.selectAll(".story-step").style("margin-top",function(d,i){
+    if(i==0){
+      return -height/3+"px"
+    }
+    return null;
+  })
 }
 
 function makeMap() {
   mapboxgl.accessToken =
-    'pk.eyJ1IjoiZG9jazQyNDIiLCJhIjoiY2pjazE5eTM2NDl2aDJ3cDUyeDlsb292NiJ9.Jr__XbmAolbLyzPDj7-8kQ';
+    'pk.eyJ1IjoiZG9jazQyNDIiLCJhIjoiY2thZWxrN3cxMDVpYTJ0bXZwenI2ZXl1ZCJ9.E0ICxBW96VVQbnQqyRTWbA';
 
-  const centerCooords = [40.119448, -98.056438]
-
-  const $touristMap = new mapboxgl.Map({
+  $touristMap = new mapboxgl.Map({
     container: 'tourist',
     center: [centerCooords[1], centerCooords[0]],
     maxZoom: 17,
@@ -682,15 +559,14 @@ function makeMap() {
     zoom: 3.9,
   });
 
-
-  const $localMap = new mapboxgl.Map({
+  $localMap = new mapboxgl.Map({
     container: 'local',
     center: [centerCooords[1], centerCooords[0]],
     maxZoom: 17,
     minZoom: 3,
     dragPan: false,
     scrollZoom: false,
-    style: 'mapbox://styles/dock4242/cka4g5py203jk1iqs4cpx6b9e?optimize=true', // optimize=true',
+    style: 'mapbox://styles/dock4242/cka4g5py203jk1iqs4cpx6b9e', // optimize=true',
     maxBounds: [
       [-180, 0],
       [-40, 75]
@@ -698,25 +574,18 @@ function makeMap() {
     zoom: 3.9,
   });
 
-  const container = '#map'
-  $compareMap = new mapboxgl.Compare($touristMap, $localMap, container);
-
   return [$touristMap, $localMap]
-
 }
 
 function init() {
   resize()
   setupDOM()
   const maps = makeMap()
-  $localMap = maps[1]
-  $touristMap = maps[0]
-
 
   $touristMap.on('load', () => {
+    $touristMap.resize();
     $touristMap.scrollZoom.disable()
-    $compareMap.setSlider(width)
-    console.log($compareMap.currentPosition)
+    // $compareMap.setSlider(width)
     //   d3.select('.mapboxgl-compare').classed('hidden', true)
     setupEnterView()
   })

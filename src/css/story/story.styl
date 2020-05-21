@@ -11,35 +11,31 @@
         display: flex
         flex-direction: column
         padding-top 3rem
+        justify-content flex-end
         font-family: 'National 2 Web'
-        
+
 
         .title
-            height 50%
-            display: flex
-            justify-content: center
+          flex-grow 1
+          display flex
+          flex-direction column
+          justify-content center
+          .title-text
+              text-align: center
+              font-size 432px
+              color: white
+              font-weight: 800
+              width 100%
+              @media (max-width: 950px)
+                  font-size 46vw
 
-            .title-text
-                text-align: center
-                // font-size: 248px
-                font-size 432px
-                color: white
-                font-weight: 800
-                display: flex;
-                justify-content: center;
-                align-content: center;
-                flex-direction: column;
-                @media (max-width: 550px)
-                    font-size 144px
-        
         .subhed
-            height 50%
             text-align left
             font-size 24px
             color white
             display: flex
             flex-direction: column
-            justify-content: space-around
+            justify-content: flex-end
 
             &__para
                 margin 0
@@ -60,11 +56,11 @@
                 @media (max-width: 550px)
                     font-size 16px
 
-                .byline-author
+                a
+                  color white
+                  border-color #fff
+                  span
                     color white
-                    a
-                        text-decoration: underline
-                        color white
 
     .v2-cover-img
         height 50vh
@@ -88,8 +84,8 @@
         left: 50%
         top: 50%
         transform: translate(-50%,-50%)
-    
-    
+
+
         .hed-container
             border: 3px solid #333;
             padding 2rem 0 2rem 0
@@ -97,16 +93,16 @@
             .title
                 margin 0 auto
                 text-align center
-                
+
             .hed
                 font-size: 48px
                 font-family: 'AdamCG'
                 width 50rem
-            
+
             .subhed
                 font-family: 'National 2 Web'
                 font-size 36px
-                  
+
 
 .highlight-blue
     background-color: #FBB2BD
@@ -131,24 +127,24 @@
 .highlight-orange
     background-color: #E59D59
     font-weight 800
-    color white   
+    color white
     padding 0 0.5rem 0 0.5rem
 
 
 .highlight-purple
     background-color: #A86AC9
     font-weight 800
-    color white  
-    padding 0 0.5rem 0 0.5rem   
+    color white
+    padding 0 0.5rem 0 0.5rem
 
 .highlight-pink
     // background-color: #fa9fb5
     font-weight 800
-    // color white  
-    // padding 0 0.5rem 0 0.5rem   
+    // color white
+    // padding 0 0.5rem 0 0.5rem
 
-.highlight-subhed-top   
-    font-weight: 800 
+.highlight-subhed-top
+    font-weight: 800
     color: #2c80bc
     background-color: white
 
@@ -159,13 +155,17 @@
 .highlight-subhed-bottom
     font-weight: 800
     background-color: #ff1863
-    
-.cold-fish
-    background-color: #f7f4f9 
 
-.hot-tamale 
+.cold-fish
+    background-color: #f7f4f9
+    padding-left 3px
+    padding-right 3px
+
+.hot-tamale
     background-color: #ce1256
-    color white 
+    color white
+    padding-left 3px
+    padding-right 3px
 
 .highlight-navy
     font-weight: 800
@@ -175,27 +175,36 @@
 #map
     position: -webkit-sticky
     position: sticky
-    // position: fixed
-    // top: 1%
-    // left: 1%
-    // margin-top 3rem
+
     background-color: #44a5eb
     top 0
-    // padding-top: 2rem   
+    left 0
+    height 100%
+    width 100%
+    // padding-top: 2rem
     z-index: 1
-    @media (max-width: 550px)
-        top: 4rem
-    
-        
+    &:before
+      content ''
+      width 100%
+      background linear-gradient(180deg, white 0px, transparent 170px)
+      pointer-events none
+      height 100%
+      z-index 2
+      height 100%
+      position absolute
 
 
-.story    
+
+
+.story
     position: relative
     z-index: 2
+    pointer-events none
     .story-step
         // height 100vh
         // position: relative
         z-index 3
+        pointer-events none
         background-color: rgba(255, 192, 203, 0);
 
     // .story-step:last-of-type
@@ -207,22 +216,25 @@
 
     .story-text
         margin 0 auto
+        pointer-events all
         max-width 50rem
         background-color: white
         padding 2.5rem
         z-index 3
-        // border: 3px solid #333;
-        border 3px solid #115484
+        border-top 4px solid #115484
+        border-bottom 2px solid #115484
         font-family: 'National 2 Web'
+        box-shadow 0px 3px 3px rgba(0,0,0,.1)
+        width 90%
         @media (max-width: 550px)
             max-width 20rem
             padding 1rem
-    
+
     // .story-behind
     //     z-index: 2
     //     left: -10px;
     //     top: 10px;
-            
+
 .legends-container
     position: absolute
     bottom: 1%
@@ -231,34 +243,89 @@
     width: 50px
     height: 50px
     display: none
-    
-    
+
+.mapboxgl-ctrl-logo
+  border none
 
 .explore-button
     background-color: #115484
     color white
     font-weight: 800
-    text-transform: capitalize
+    font-size 18px
+    text-transform uppercase
     font-family 'National 2 Web'
-    
+    cursor pointer
+    box-shadow 0 0 0 2px #131671
+    border-radius 4px
+    letter-spacing 1px
+    padding 1rem
+    background white
+    color #131671
+    display: block;
+    margin: 0 auto;
+    margin-top: 1rem;
+    width: 190px;
+    text-align: center;
+
+
+
 
 .hidden
-    display: none
+  visibility hidden
 
 .invisible
     visibility: hidden
 
-.btn--to-story    
+.btn--map-select
+  height 2rem
+  width auto
+  position: fixed
+  top 1rem
+  right 0
+  left 0
+  margin 0 auto
+  display none
+  z-index 100
+  font-family: 'National 2 Web'
+  color #131671;
+  font-weight: 800
+  cursor: pointer;
+  display: none
+  justify-content center
+  user-select none
+  p
+    font-size 16px
+    letter-spacing 1px
+    background-color: white
+    margin 0
+    border 2px solid #131671
+    border-radius 4px
+    box-shadow inset 0 1px 2px rgba(0,0,0,0.08)
+    align-self center
+    line-height 2rem
+    padding-left 1rem
+    padding-right 1rem
+    text-transform uppercase
+    color rgb(173,172,185)
+    &:last-of-type
+      border-top-left-radius 0px
+      border-bottom-left-radius 0px
+      margin-left -4px
+  .selected
+    color #131671
+
+
+
+.btn--to-story
     height 2rem
     width auto
     position: fixed
-    bottom 1%
-    left 50%
-    transform: translate(-50%,0)
+    top 1rem
+    right 1rem
+    user-select none
     background-color: white
-    // border: 3px solid #115484
-    border: 3px solid #131671;
-    z-index: 100;
+    //border 3px solid #131671
+    z-index 100
     font-family: 'National 2 Web'
     padding: 0.3rem;
     font-size: 18px;
@@ -269,30 +336,31 @@
     display: none
     flex-direction: column
     justify-content: center
+    border-radius 4px
+    box-shadow 0 0 0 2px #131671
+    padding 1rem 1rem
+    p
+      font-size 16px
+      letter-spacing 1px
 
 .attraction-detail-container
-    -webkit-box-shadow: 2px 3px 5px 0px rgba(0,0,0,0.75);
-    -moz-box-shadow: 2px 3px 5px 0px rgba(0,0,0,0.75);
-    box-shadow: 2px 3px 5px 0px rgba(0,0,0,0.75);
-    position: fixed;
+    //box-shadow 2px 3px 5px 0px rgba(0,0,0,0.75)
+    position: absolute;
+    z-index 1000
+    max-width 95%
     text-align center
-    left: 50%;
-    top: 5px
-    transform: translate(-50%,0);
+    bottom: 1rem
+    left 0px
+    right 0px
+    margin 0 auto
     // background-color: #115484
     background-color: #348dcb
     font-family: 'National 2 Web'
     z-index: 100;
     padding 1rem
-    width auto
+    width max-content
     height auto
     color: white
-    @media (max-width: 550px)
-        top: 1px
-        width 100%
-        height 5rem
-        padding 0.5rem
-    
     .display--attraction-name
         font-weight: 800
         background-color #131671
@@ -302,8 +370,8 @@
 .btn--about
     z-index: 1001;
     position: fixed;
-    bottom: 0.5rem;
-    right: .75rem;
+    top: 1rem;
+    left: .75rem;
     background-color: #131671;
     color: white;
     font-weight: 700;
@@ -313,25 +381,29 @@
     border-radius: 50%;
     font-family: 'National 2 Web'
     text-align: center
-    padding-top 0.5rem
+    padding-top 7px
     cursor: pointer;
 
 .about
-    -webkit-box-shadow: 2px 3px 5px 0px rgba(0,0,0,0.75);
-    -moz-box-shadow: 2px 3px 5px 0px rgba(0,0,0,0.75);
-    box-shadow: 2px 3px 5px 0px rgba(0,0,0,0.75);
     font-family: 'National 2 Web'
     position: fixed;
-    text-align center
-    left: 50%;
-    top: 5px
-    transform: translate(-50%,0);
+    text-align left
+    left: 0%;
+    right 0%
+    top: 50%
+    transform: translate(0,-50%);
     background-color: #348dcb
     z-index: 100;
-    padding 1rem
+    padding 3rem
     width auto
+    line-height 1.5
+    max-width 600px
+    margin 0 auto
     height auto
     color: white
+    a
+      color white
+      border-color white
 
     @media (max-width: 550px)
         top: 1px
@@ -348,13 +420,19 @@
         color white
         height: 2rem;
         position: absolute;
-        top: -2%;
-        right: -2%;
+        top: .5rem;
+        right: .5rem;
         font-weight: 800;
         cursor: pointer;
-    
-    
-// TESTING GROUND FOR VISIBLE FILTER CODE   
+        svg
+          width 26px
+          path
+            fill white
+            stroke white
+            stroke-width 4px
+
+
+// TESTING GROUND FOR VISIBLE FILTER CODE
 .map-overlay {
     position: fixed;
     width: 25%;
@@ -368,16 +446,16 @@
     overflow: scroll
     z-index: 1000
 }
- 
-.map-overlay fieldset 
+
+.map-overlay fieldset
     // display: none;
     background: #ddd;
     border: none;
     padding: 10px;
     margin: 0;
 
- 
-.map-overlay input 
+
+.map-overlay input
     display: block;
     border: none;
     width: 100%;
@@ -386,55 +464,93 @@
     margin: 0;
     box-sizing: border-box;
 
- 
-.map-overlay .listing 
+
+.map-overlay .listing
     overflow: auto;
     max-height: 100%;
 
- 
-.map-overlay .listing > * 
+
+.map-overlay .listing > *
     display: block;
     padding: 5px 10px;
     margin: 0;
 
- 
-.map-overlay .listing a 
+
+.map-overlay .listing a
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     color: #404;
     text-decoration: none;
 
- 
-.map-overlay .listing a:last-child 
+
+.map-overlay .listing a:last-child
     border: none;
 
- 
-.map-overlay .listing a:hover 
-    background: #f0f0f0;
-    
 
+.map-overlay .listing a:hover
+    background: #f0f0f0;
 
 .mapbox-popup-content
     pointer-events: none
-.mapboxgl-popup    
+.mapboxgl-popup
     pointer-events: none
 .mapboxgl-popup-anchor-bottom
      pointer-events: none
 .mapboxgl-popup-tip
      pointer-events: none
-.mapboxgl-popup-content    
-     pointer-events: none    
+.mapboxgl-popup-content
+     pointer-events: none
 
 #tourist
     position absolute
     top 0
-    bottom 0
+    left 0
     width 100%
+    height 100%
 
 #local
     position absolute
     top 0
-    bottom 0
+    left 0
     width 100%
+    display none
+    height 100%
+#compare-container
+  position absolute
+  top 0
+  left 0
+  width 100%
+  height 100%
+  overflow hidden
+  pointer-events none
+#map
+  .mapboxgl-compare
+    background-color #252525
+    width 4px
+    pointer-events all
+    .compare-swiper-vertical
+      background-color #252525
+    &:before, &:after
+      content 'Tourist-Majority Reviews'
+      position absolute
+      top 50%
+      left 0px
+      font-family $national
+      text-align right
+      font-weight 600
+      transform translate(-100%,calc(-50% - 70px))
+      background: #e69005;
+      color: white;
+      width: 150px;
+      padding: .5rem .5rem;
+      border-top-left-radius: 3px;
+      border-bottom-left-radius: 3px;
 
-// .mapboxgl-compare
-    // display none    
+    &:after
+      content 'Locals-Majority Reviews'
+      transform translate(4px, calc(-50% - 70px))
+      text-align left
+      border-top-right-radius: 3px;
+      border-bottom-right-radius: 3px;
+      border-top-left-radius: 0px;
+      border-bottom-left-radius: 0px;
+      background #d62b74
