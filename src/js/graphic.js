@@ -30,24 +30,25 @@ let mapZindex;
 
 let changeZindex = false;
 
+let currentAttractionSlug;
+
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function changeShownMap(){
-  if(mapSelected == "tourist"){
+function changeShownMap() {
+  if (mapSelected == "tourist") {
     $touristMap.setCenter($localMap.getCenter());
     $touristMap.setZoom($localMap.getZoom())
 
-    d3.select("#local").style("display",null);
-    d3.select("#tourist").style("display",null);
-  }
-  else if(mapSelected == "local") {
+    d3.select("#local").style("display", null);
+    d3.select("#tourist").style("display", null);
+  } else if (mapSelected == "local") {
     $localMap.setCenter($touristMap.getCenter());
     $localMap.setZoom($touristMap.getZoom())
 
-    d3.select("#local").style("display","block");
-    d3.select("#tourist").style("display","none");
+    d3.select("#local").style("display", "block");
+    d3.select("#tourist").style("display", "none");
   }
 }
 
@@ -79,14 +80,14 @@ function makeLegends() {
     .scale(thresholdScale)
 }
 
-function heightResize(){
+function heightResize() {
   let windowHeight = window.innerHeight;
   // d3.select("#map").style("height",windowHeight+"px");
 
-  if($touristMap){
+  if ($touristMap) {
     $touristMap.resize();
   }
-  if($localMap){
+  if ($localMap) {
     $localMap.resize();
   }
 }
@@ -97,20 +98,20 @@ function resize() {
   width = window.innerWidth
 
   let stepSize = height;
-  if(d3.select("body").classed("is-mobile")){
-    stepSize = height*1.5;
+  if (d3.select("body").classed("is-mobile")) {
+    stepSize = height * 1.5;
   }
 
   d3.selectAll('.story-step')
-    .style('height', function(d,i){
-      if(i == d3.selectAll('.story-step').size() - 1){
+    .style('height', function (d, i) {
+      if (i == d3.selectAll('.story-step').size() - 1) {
         // if(d3.select("body").classed("is-mobile")){
         //   return stepSize*.5+"px";
         // }
         return "400px";
-        return stepSize*3/4+"px";
+        return stepSize * 3 / 4 + "px";
       }
-      return stepSize+"px"
+      return stepSize + "px"
     })
 
   d3.select('.cover')
@@ -120,10 +121,10 @@ function resize() {
     .style('height', `${height}px`)
 
 
-  if($touristMap){
+  if ($touristMap) {
     $touristMap.resize();
   }
-  if($localMap){
+  if ($localMap) {
     $localMap.resize();
   }
 
@@ -131,7 +132,7 @@ function resize() {
   //   .style('height', `${height/2}px`)
 
   //d3.select('.subhed')
-    //.style('height', "100px")//`${height/2}px`)
+  //.style('height', "100px")//`${height/2}px`)
 }
 
 function numberWithCommas(x) {
@@ -150,14 +151,18 @@ function formatScore(score) {
   return (returnedScore + '/5')
 }
 
+function handleLinkOut(thing) {
+  console.log(thing)
+}
+
 function setupExplore() {
   const $exploreButton = d3.select('[data-step="slide6"]').select('.story-text')
   const $storyButton = d3.select('.btn--to-story')
-  if(d3.select("body").classed("is-mobile") || width < 600){
+  if (d3.select("body").classed("is-mobile") || width < 600) {
     $storyButton.html('<svg viewBox="0 0 40 40"> <path class="close-x" d="M 10,10 L 30,30 M 30,10 L 10,30"></path> </svg>');
   }
   const $toggle = d3.select('.btn--map-select').selectAll("p");
-  const detailsBar = d3.select('.attraction-detail-container')
+  const $detailsBar = d3.select('.attraction-detail-container')
   const $aboutButton = d3.select('.btn--about')
   const $aboutCloseButton = d3.select('.about-close')
   //   const $localMapOverlayList = d3.select('.map-overlay')
@@ -169,7 +174,7 @@ function setupExplore() {
 
   $touristMap.on('mousemove', e => {
 
-    if(exploring){
+    if (exploring) {
       const pointFeatures = $touristMap.queryRenderedFeatures(e.point)
       const relevantLayer = ['updated_all_locals_tourists-5mhfie']
       const relevantFeature = pointFeatures.filter(item => relevantLayer.includes(item.sourceLayer))
@@ -178,6 +183,11 @@ function setupExplore() {
         attractionName = relevantFeature[0].properties.attraction_name
         attractionScore = relevantFeature[0].properties.score
         attractionTotal = relevantFeature[0].properties.total
+        currentAttractionSlug = relevantFeature[0].properties.attraction_slug
+        console.log(relevantFeature)
+        $touristMap.on('click', () => {
+          console.log(currentAttractionSlug)
+        })
       }
 
       $detailsAttractionName.text(attractionName)
@@ -189,12 +199,16 @@ function setupExplore() {
         <span class='display--attraction-name'>${attractionName}</span> scores an average of <span class='display--rating'>${formatScore(attractionScore)}</span>, with
         <span class='display--total'>${numberWithCommas(attractionTotal)}</span> ratings.`;
 
-      detailsBar.html(htmlString)
+      $detailsBar
+        .html(htmlString)
+
+
+
     }
   })
   $localMap.on('mousemove', e => {
 
-    if(exploring){
+    if (exploring) {
       const pointFeatures = $localMap.queryRenderedFeatures(e.point)
       const relevantLayer = ['updated_all_locals_tourists-5mhfie']
       const relevantFeature = pointFeatures.filter(item => relevantLayer.includes(item.sourceLayer))
@@ -214,7 +228,7 @@ function setupExplore() {
       <span class='display--attraction-name'>${attractionName}</span> scores an average of <span class='display--rating'>${formatScore(attractionScore)}</span>, with
       <span class='display--total'>${numberWithCommas(attractionTotal)}</span> ratings.`;
 
-      detailsBar.html(htmlString)
+      $detailsBar.html(htmlString)
     }
 
 
@@ -223,7 +237,7 @@ function setupExplore() {
   $exploreButton.on('click', () => {
 
     $aboutButton.classed('hidden', false)
-    detailsBar.classed('hidden', false)
+    $detailsBar.classed('hidden', false)
 
     $storyButton.style('display', 'block')
     d3.select('.story').classed('hidden', true)
@@ -237,15 +251,15 @@ function setupExplore() {
 
     d3.select('.btn--map-select').style('display', 'flex');
 
-    $touristMap.fitBounds([seattleCoords,miamiCoords])
-    $localMap.fitBounds([seattleCoords,miamiCoords])
+    $touristMap.fitBounds([seattleCoords, miamiCoords])
+    $localMap.fitBounds([seattleCoords, miamiCoords])
   })
 
   $storyButton.on('click', () => {
     changeZindex = true;
 
     $aboutButton.classed('hidden', true)
-    detailsBar.classed('hidden', true)
+    $detailsBar.classed('hidden', true)
     $storyButton.style('display', 'none')
     d3.select('.btn--map-select').style('display', null);
 
@@ -285,21 +299,20 @@ function setupExplore() {
 
   })
 
-  $toggle.classed("selected",function(d,i){
-    if(i==1){
+  $toggle.classed("selected", function (d, i) {
+    if (i == 1) {
       return true;
     }
     return false
   })
 
-  $toggle.on('click', function(d,i){
-    $toggle.classed("selected",false)
-    d3.select(this).classed("selected",true);
-    if(i==0 && mapSelected != "tourist"){
+  $toggle.on('click', function (d, i) {
+    $toggle.classed("selected", false)
+    d3.select(this).classed("selected", true);
+    if (i == 0 && mapSelected != "tourist") {
       mapSelected = "tourist"
       changeShownMap();
-    }
-    else if (mapSelected != "local") {
+    } else if (mapSelected != "local") {
       mapSelected = "local";
       changeShownMap();
     }
@@ -324,13 +337,12 @@ function updateMapBack(el) {
     // $localMap.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'none');
     // $localMap.setLayoutProperty('local-tourist-alpaca-corner-circles', 'visibility', 'none');
 
-  }
-  else if (currentStep === 'slide2') {
+  } else if (currentStep === 'slide2') {
 
     $touristMap.setLayoutProperty('top-level-attractions', 'visibility', 'visible');
     $touristMap.setLayoutProperty('top-level-attractions-circles', 'visibility', 'visible');
 
-    $touristMap.fitBounds([seattleCoords,miamiCoords]).on('render', () => {
+    $touristMap.fitBounds([seattleCoords, miamiCoords]).on('render', () => {
       if (stopTimesquare) {
         // console.log(0)
         // $localMap.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'none')
@@ -338,13 +350,11 @@ function updateMapBack(el) {
       }
     })
 
-  }
-  else if (currentStep === 'slide3') {
-    if(compareGraphicBuilt){
+  } else if (currentStep === 'slide3') {
+    if (compareGraphicBuilt) {
       removeCompare("right");
     }
-  }
-  else if (currentStep === 'slide3_5') {
+  } else if (currentStep === 'slide3_5') {
 
     $touristMap.stop()
     $touristMap.setCenter([nycCoords[1], nycCoords[0]])
@@ -352,7 +362,7 @@ function updateMapBack(el) {
     stopTimesquare = false;
     $touristMap.resize();
 
-    if(!compareGraphicBuilt){
+    if (!compareGraphicBuilt) {
       createCompare("tourist");
     }
   } else if (currentStep === 'slide4') {
@@ -363,21 +373,20 @@ function updateMapBack(el) {
   }
 }
 
-function createCompare(match){
-  d3.select("#local").style("display","block");
-  d3.select("#tourist").style("display",null);
+function createCompare(match) {
+  d3.select("#local").style("display", "block");
+  d3.select("#tourist").style("display", null);
 
-  if(match == "tourist"){
+  if (match == "tourist") {
     $localMap.setCenter($touristMap.getCenter());
     $localMap.setZoom($touristMap.getZoom())
-  }
-  else{
+  } else {
     $touristMap.setCenter(localMap.getCenter());
     $touristMap.setZoom($localMap.getZoom())
   }
 
 
-  $compareMap = new mapboxgl.Compare($touristMap,$localMap,"#compare-container");
+  $compareMap = new mapboxgl.Compare($touristMap, $localMap, "#compare-container");
 
   function handleMove(evt) {
     evt.preventDefault();
@@ -390,25 +399,24 @@ function createCompare(match){
   compareGraphicBuilt = true;
 }
 
-function removeCompare(mapDirection){
+function removeCompare(mapDirection) {
 
-  var sliderScale = d3.scalePow().domain([0,499]).range([$compareMap.currentPosition,width]).exponent(3);
-  if(mapDirection == "left"){
-    sliderScale.range([$compareMap.currentPosition,0])
+  var sliderScale = d3.scalePow().domain([0, 499]).range([$compareMap.currentPosition, width]).exponent(3);
+  if (mapDirection == "left") {
+    sliderScale.range([$compareMap.currentPosition, 0])
   }
 
-  var t = d3.timer(function(elapsed) {
+  var t = d3.timer(function (elapsed) {
     $compareMap.setSlider(sliderScale(elapsed))
-    if (elapsed > 499){
+    if (elapsed > 499) {
       t.stop();
       $compareMap.remove();
       compareGraphicBuilt = false;
-      if(mapDirection == "right"){
-        d3.select("#local").style("display",null);
+      if (mapDirection == "right") {
+        d3.select("#local").style("display", null);
         $touristMap.resize();
-      }
-      else {
-        d3.select("#tourist").style("display","none");
+      } else {
+        d3.select("#tourist").style("display", "none");
       }
     }
   }, 500);
@@ -416,16 +424,16 @@ function removeCompare(mapDirection){
 
 }
 
-function slideCompare(amount){
+function slideCompare(amount) {
 
-  var sliderScale = d3.scalePow().domain([0,499]).range([$compareMap.currentPosition,amount*width]).exponent(3);
+  var sliderScale = d3.scalePow().domain([0, 499]).range([$compareMap.currentPosition, amount * width]).exponent(3);
   // if($compareMap.currentPosition > amount*width){
   //   sliderScale.range([$compareMap.currentPosition,amount*width])
   // }
 
-  var t = d3.timer(function(elapsed) {
+  var t = d3.timer(function (elapsed) {
     $compareMap.setSlider(sliderScale(elapsed))
-    if (elapsed > 499){
+    if (elapsed > 499) {
       t.stop();
       $touristMap.resize();
       $localMap.resize();
@@ -477,8 +485,7 @@ function updateMap(el) {
     // $localMap.setLayoutProperty('local-vs-tourist-circles', 'visibility', 'visible');
 
 
-  }
-  else if (currentStep === 'slide2') {
+  } else if (currentStep === 'slide2') {
     // $localMap.setLayoutProperty('local-tourist-alpaca-corner', 'visibility', 'visible');
     // $localMap.setLayoutProperty('local-tourist-alpaca-corner-circles', 'visibility', 'visible');
 
@@ -492,45 +499,40 @@ function updateMap(el) {
     stopTimesquare = true;
 
     $touristMap.flyTo({
-        center: [nycCoords[1], nycCoords[0]],
-        zoom: nycZoom
-      })
+      center: [nycCoords[1], nycCoords[0]],
+      zoom: nycZoom
+    })
 
-      // .on('render', () => {
-      //   if (stopTimesquare) {
-      //     //   $localMap.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'visible')
-      //   }
-      // })
+    // .on('render', () => {
+    //   if (stopTimesquare) {
+    //     //   $localMap.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'visible')
+    //   }
+    // })
 
     // $localMap.setLayoutProperty('min-9-zoom-all_reviews', 'visibility', 'none');
 
-  }
-  else if (currentStep == 'slide3_5'){
+  } else if (currentStep == 'slide3_5') {
     $touristMap.stop()
     $touristMap.setCenter([nycCoords[1], nycCoords[0]])
     $touristMap.setZoom(nycZoom)
     stopTimesquare = false;
     $touristMap.resize();
 
-    if(!compareGraphicBuilt){
+    if (!compareGraphicBuilt) {
       createCompare("tourist");
     }
     d3.select('.mapboxgl-compare').classed('hidden', false)
-  }
-  else if (currentStep === 'slide4') {
-    if(compareGraphicBuilt){
+  } else if (currentStep === 'slide4') {
+    if (compareGraphicBuilt) {
       slideCompare(.2);
     }
-  }
-  else if (currentStep === 'slide5') {
-  }
-  else if (currentStep == 'slide6'){
-    if(compareGraphicBuilt){
+  } else if (currentStep === 'slide5') {} else if (currentStep == 'slide6') {
+    if (compareGraphicBuilt) {
       removeCompare("left");
     }
     $localMap.resize()
-    $touristMap.fitBounds([seattleCoords,miamiCoords])
-    $localMap.fitBounds([seattleCoords,miamiCoords])
+    $touristMap.fitBounds([seattleCoords, miamiCoords])
+    $localMap.fitBounds([seattleCoords, miamiCoords])
 
     d3.select('.legends-container').style('visibility', 'visible')
   }
@@ -547,8 +549,7 @@ function setupEnterView() {
     exit(el) {
       updateMapBack(el)
     },
-    progress(el, progress) {
-    },
+    progress(el, progress) {},
     offset: 0.05, // enter at middle of viewport
     once: false, // trigger just once
   });
@@ -559,9 +560,9 @@ function setupDOM() {
   // d3.select('#map')
   //   .style('height', `${height}px`)
 
-  d3.selectAll(".story-step").style("margin-top",function(d,i){
-    if(i==0){
-      return -height/3+"px"
+  d3.selectAll(".story-step").style("margin-top", function (d, i) {
+    if (i == 0) {
+      return -height / 3 + "px"
     }
     return null;
   })
@@ -582,7 +583,7 @@ function makeMap() {
     //   [-180, 0],
     //   [-40, 75]
     // ],
-    fitBoundsOptions: ([seattleCoords,miamiCoords]),
+    fitBoundsOptions: ([seattleCoords, miamiCoords]),
     zoom: 3
   });
 
@@ -597,7 +598,7 @@ function makeMap() {
     //   [-180, 0],
     //   [-40, 75]
     // ],
-    fitBoundsOptions: ([seattleCoords,miamiCoords]),
+    fitBoundsOptions: ([seattleCoords, miamiCoords]),
     zoom: 3
   });
 
@@ -614,7 +615,9 @@ function init() {
   $touristMap.on('load', () => {
     $touristMap.resize();
     $touristMap.scrollZoom.disable()
-    $touristMap.fitBounds([seattleCoords,miamiCoords], {padding:0})
+    $touristMap.fitBounds([seattleCoords, miamiCoords], {
+      padding: 0
+    })
 
     $touristMap.setLayoutProperty('top-level-attractions', 'visibility', 'visible');
     $touristMap.setLayoutProperty('top-level-attractions-circles', 'visibility', 'visible');
