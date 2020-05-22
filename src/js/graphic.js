@@ -590,11 +590,9 @@ function makeMap() {
     container: 'local',
     center: [centerCooords[1], centerCooords[0]],
     maxZoom: 17,
-    minZoom: 3,
     dragPan: false,
     scrollZoom: false,
     style: 'mapbox://styles/dock4242/cka4g5py203jk1iqs4cpx6b9e?optimize=true', // optimize=true',
-    fitBoundsOptions: ([seattleCoords,miamiCoords]),
     // bounds: [
     //   [-180, 0],
     //   [-40, 75]
