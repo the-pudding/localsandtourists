@@ -485,8 +485,8 @@ function updateMap(el) {
 
   } else if (currentStep === 'slide3') {
 
-    $touristMap.setLayoutProperty('top-level-attractions', 'visibility', 'none');
-    $touristMap.setLayoutProperty('top-level-attractions-circles', 'visibility', 'none');
+    // $touristMap.setLayoutProperty('top-level-attractions', 'visibility', 'none');
+    // $touristMap.setLayoutProperty('top-level-attractions-circles', 'visibility', 'none');
 
 
     stopTimesquare = true;
@@ -615,6 +615,11 @@ function init() {
     $touristMap.resize();
     $touristMap.scrollZoom.disable()
     $touristMap.fitBounds([seattleCoords,miamiCoords], {padding:0})
+
+    $touristMap.setLayoutProperty('top-level-attractions', 'visibility', 'visible');
+    $touristMap.setLayoutProperty('top-level-attractions-circles', 'visibility', 'visible');
+
+
     // $compareMap.setSlider(width)
     //   d3.select('.mapboxgl-compare').classed('hidden', true)
     setupEnterView()
