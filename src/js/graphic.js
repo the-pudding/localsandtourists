@@ -13,10 +13,14 @@ let attractionScore = ''
 let attractionTotal = ''
 let compareGraphicBuilt = false;
 let width;
+let exploring = false;
 
 let mapSelected = "local";
 const nycCoords = [40.767474, -73.970294]
 const centerCooords = [40.119448, -98.056438]
+
+const seattleCoords = [-128.084316, 48.739437];
+const miamiCoords = [-67.028255, 25.629145];
 
 const nycZoom = 10.8
 
@@ -75,28 +79,42 @@ function makeLegends() {
     .scale(thresholdScale)
 }
 
-function resize() {
+function heightResize(){
+  let windowHeight = window.innerHeight;
+  // d3.select("#map").style("height",windowHeight+"px");
 
+  if($touristMap){
+    $touristMap.resize();
+  }
+  if($localMap){
+    $localMap.resize();
+  }
+}
+
+function resize() {
 
   const height = window.innerHeight
   width = window.innerWidth
 
-  console.log(height)
+  let stepSize = height;
+  if(d3.select("body").classed("is-mobile")){
+    stepSize = height*1.5;
+  }
 
   d3.selectAll('.story-step')
     .style('height', function(d,i){
       if(i == d3.selectAll('.story-step').size() - 1){
-        return height*3/4+"px";
+        // if(d3.select("body").classed("is-mobile")){
+        //   return stepSize*.5+"px";
+        // }
+        return "400px";
+        return stepSize*3/4+"px";
       }
-      return height+"px"
+      return stepSize+"px"
     })
-
-  d3.select('html')
-    .style('width', `${width}px`)
 
   d3.select('.cover')
     .style('height', `${height}px`)
-    .style('width', `${width}px`)
 
   d3.select('.v2-cover-text')
     .style('height', `${height}px`)
@@ -135,6 +153,9 @@ function formatScore(score) {
 function setupExplore() {
   const $exploreButton = d3.select('[data-step="slide6"]').select('.story-text')
   const $storyButton = d3.select('.btn--to-story')
+  if(d3.select("body").classed("is-mobile") || width < 600){
+    $storyButton.html('<svg viewBox="0 0 40 40"> <path class="close-x" d="M 10,10 L 30,30 M 30,10 L 10,30"></path> </svg>');
+  }
   const $toggle = d3.select('.btn--map-select').selectAll("p");
   const detailsBar = d3.select('.attraction-detail-container')
   const $aboutButton = d3.select('.btn--about')
@@ -148,49 +169,54 @@ function setupExplore() {
 
   $touristMap.on('mousemove', e => {
 
-    const pointFeatures = $touristMap.queryRenderedFeatures(e.point)
-    const relevantLayer = ['updated_all_locals_tourists-5mhfie']
-    const relevantFeature = pointFeatures.filter(item => relevantLayer.includes(item.sourceLayer))
+    if(exploring){
+      const pointFeatures = $touristMap.queryRenderedFeatures(e.point)
+      const relevantLayer = ['updated_all_locals_tourists-5mhfie']
+      const relevantFeature = pointFeatures.filter(item => relevantLayer.includes(item.sourceLayer))
 
-    if (relevantFeature.length > 0) {
-      attractionName = relevantFeature[0].properties.attraction_name
-      attractionScore = relevantFeature[0].properties.score
-      attractionTotal = relevantFeature[0].properties.total
+      if (relevantFeature.length > 0) {
+        attractionName = relevantFeature[0].properties.attraction_name
+        attractionScore = relevantFeature[0].properties.score
+        attractionTotal = relevantFeature[0].properties.total
+      }
+
+      $detailsAttractionName.text(attractionName)
+      $detailsRating.text(attractionScore)
+      $detailsTotal.text(attractionTotal)
+
+      const htmlString = attractionName == '' ? 'Hover over a destination to find out its rating and total number of reviews.' : `
+
+        <span class='display--attraction-name'>${attractionName}</span> scores an average of <span class='display--rating'>${formatScore(attractionScore)}</span>, with
+        <span class='display--total'>${numberWithCommas(attractionTotal)}</span> ratings.`;
+
+      detailsBar.html(htmlString)
     }
-
-    $detailsAttractionName.text(attractionName)
-    $detailsRating.text(attractionScore)
-    $detailsTotal.text(attractionTotal)
-
-    const htmlString = attractionName == '' ? 'Hover over a destination to find out its rating and total number of reviews.' : `
-
-      <span class='display--attraction-name'>${attractionName}</span> scores an average of <span class='display--rating'>${formatScore(attractionScore)}</span>, with
-      <span class='display--total'>${numberWithCommas(attractionTotal)}</span> ratings.`;
-
-    detailsBar.html(htmlString)
   })
   $localMap.on('mousemove', e => {
 
-    const pointFeatures = $localMap.queryRenderedFeatures(e.point)
-    const relevantLayer = ['updated_all_locals_tourists-5mhfie']
-    const relevantFeature = pointFeatures.filter(item => relevantLayer.includes(item.sourceLayer))
+    if(exploring){
+      const pointFeatures = $localMap.queryRenderedFeatures(e.point)
+      const relevantLayer = ['updated_all_locals_tourists-5mhfie']
+      const relevantFeature = pointFeatures.filter(item => relevantLayer.includes(item.sourceLayer))
 
 
-    if (relevantFeature.length > 0) {
-      attractionName = relevantFeature[0].properties.attraction_name
-      attractionScore = relevantFeature[0].properties.score
-      attractionTotal = relevantFeature[0].properties.total
+      if (relevantFeature.length > 0) {
+        attractionName = relevantFeature[0].properties.attraction_name
+        attractionScore = relevantFeature[0].properties.score
+        attractionTotal = relevantFeature[0].properties.total
+      }
+
+      $detailsAttractionName.text(attractionName)
+      $detailsRating.text(attractionScore)
+      $detailsTotal.text(attractionTotal)
+
+      const htmlString = attractionName == '' ? 'Hover over a destination to find out its rating and total number of reviews.' : `
+      <span class='display--attraction-name'>${attractionName}</span> scores an average of <span class='display--rating'>${formatScore(attractionScore)}</span>, with
+      <span class='display--total'>${numberWithCommas(attractionTotal)}</span> ratings.`;
+
+      detailsBar.html(htmlString)
     }
 
-    $detailsAttractionName.text(attractionName)
-    $detailsRating.text(attractionScore)
-    $detailsTotal.text(attractionTotal)
-
-    const htmlString = attractionName == '' ? 'Hover over a destination to find out its rating and total number of reviews.' : `
-    <span class='display--attraction-name'>${attractionName}</span> scores an average of <span class='display--rating'>${formatScore(attractionScore)}</span>, with
-    <span class='display--total'>${numberWithCommas(attractionTotal)}</span> ratings.`;
-
-    detailsBar.html(htmlString)
 
   })
 
@@ -199,7 +225,7 @@ function setupExplore() {
     $aboutButton.classed('hidden', false)
     detailsBar.classed('hidden', false)
 
-    $storyButton.style('display', 'flex')
+    $storyButton.style('display', 'block')
     d3.select('.story').classed('hidden', true)
     d3.select('.cover').classed('hidden', true)
     $localMap.scrollZoom.enable()
@@ -207,29 +233,19 @@ function setupExplore() {
     $touristMap.scrollZoom.enable()
     $touristMap.dragPan.enable()
 
+    exploring = true;
+
     d3.select('.btn--map-select').style('display', 'flex');
 
-    $touristMap.setCenter([centerCooords[1], centerCooords[0]]);
-    $touristMap.setZoom(3.9);
-
-    $localMap.setCenter([centerCooords[1], centerCooords[0]]);
-    $localMap.setZoom(3.9);
-
-
-    // d3.select('header.is-sticky').classed('invisible', true)
-
-    // let storyZindex = parseInt(d3.select('.story').style('z-index'))
-    // let storyStepZindex = parseInt(d3.selectAll('.story-step').style('z-index'))
-    // let mapZindex = parseInt(d3.select('#map').style('z-index'))
-
-
+    $touristMap.fitBounds([seattleCoords,miamiCoords])
+    $localMap.fitBounds([seattleCoords,miamiCoords])
   })
 
   $storyButton.on('click', () => {
     changeZindex = true;
 
     $aboutButton.classed('hidden', true)
-    // detailsBar.classed('hidden', true)
+    detailsBar.classed('hidden', true)
     $storyButton.style('display', 'none')
     d3.select('.btn--map-select').style('display', null);
 
@@ -242,6 +258,7 @@ function setupExplore() {
 
     mapSelected = "local"
     changeShownMap();
+    exploring = false;
 
     $touristMap.setCenter([nycCoords[1], nycCoords[0]]);
     $touristMap.setZoom(nycZoom);
@@ -302,16 +319,18 @@ function updateMapBack(el) {
   console.log(currentStep);
   if (currentStep === 'slide1') {
     // $localMap.setLayoutProperty('local-tourist-alpaca-corner', 'visibility', 'none');
+
+    // $localMap.setLayoutProperty('local-tourist-alpaca-corner', 'visibility', 'none');
     // $localMap.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'none');
     // $localMap.setLayoutProperty('local-tourist-alpaca-corner-circles', 'visibility', 'none');
 
   }
   else if (currentStep === 'slide2') {
 
-    $touristMap.flyTo({
-      center: [centerCooords[1], centerCooords[0]],
-      zoom: 3.9
-    }).on('render', () => {
+    $touristMap.setLayoutProperty('top-level-attractions', 'visibility', 'visible');
+    $touristMap.setLayoutProperty('top-level-attractions-circles', 'visibility', 'visible');
+
+    $touristMap.fitBounds([seattleCoords,miamiCoords]).on('render', () => {
       if (stopTimesquare) {
         // console.log(0)
         // $localMap.setLayoutProperty('local-tourist-liberty-time-sq', 'visibility', 'none')
@@ -359,6 +378,13 @@ function createCompare(match){
 
 
   $compareMap = new mapboxgl.Compare($touristMap,$localMap,"#compare-container");
+
+  function handleMove(evt) {
+    evt.preventDefault();
+  }
+
+  d3.select(".compare-swiper-vertical").node().addEventListener("touchmove", handleMove, false);
+
   $localMap.resize();
   $touristMap.resize();
   compareGraphicBuilt = true;
@@ -459,7 +485,10 @@ function updateMap(el) {
 
   } else if (currentStep === 'slide3') {
 
-    console.log(currentStep)
+    $touristMap.setLayoutProperty('top-level-attractions', 'visibility', 'none');
+    $touristMap.setLayoutProperty('top-level-attractions-circles', 'visibility', 'none');
+
+
     stopTimesquare = true;
 
     $touristMap.flyTo({
@@ -500,10 +529,8 @@ function updateMap(el) {
       removeCompare("left");
     }
     $localMap.resize()
-    $localMap.flyTo({
-      center: [centerCooords[1], centerCooords[0]],
-      zoom: 3.9
-    })
+    $touristMap.fitBounds([seattleCoords,miamiCoords])
+    $localMap.fitBounds([seattleCoords,miamiCoords])
 
     d3.select('.legends-container').style('visibility', 'visible')
   }
@@ -529,8 +556,8 @@ function setupEnterView() {
 
 function setupDOM() {
 
-  d3.select('#map')
-    .style('height', `${height}px`)
+  // d3.select('#map')
+  //   .style('height', `${height}px`)
 
   d3.selectAll(".story-step").style("margin-top",function(d,i){
     if(i==0){
@@ -548,31 +575,33 @@ function makeMap() {
     container: 'tourist',
     center: [centerCooords[1], centerCooords[0]],
     maxZoom: 17,
-    minZoom: 3,
     dragPan: false,
     scrollZoom: false,
     style: 'mapbox://styles/dock4242/cka4gpcor04481is1e30pmzc2?optimize=true', // optimize=true',
-    maxBounds: [
-      [-180, 0],
-      [-40, 75]
-    ],
-    zoom: 3.9,
+    // bounds: [
+    //   [-180, 0],
+    //   [-40, 75]
+    // ],
+    fitBoundsOptions: ([seattleCoords,miamiCoords]),
+    zoom: 3
   });
 
   $localMap = new mapboxgl.Map({
     container: 'local',
     center: [centerCooords[1], centerCooords[0]],
     maxZoom: 17,
-    minZoom: 3,
     dragPan: false,
     scrollZoom: false,
-    style: 'mapbox://styles/dock4242/cka4g5py203jk1iqs4cpx6b9e', // optimize=true',
-    maxBounds: [
-      [-180, 0],
-      [-40, 75]
-    ],
-    zoom: 3.9,
+    style: 'mapbox://styles/dock4242/cka4g5py203jk1iqs4cpx6b9e?optimize=true', // optimize=true',
+    // bounds: [
+    //   [-180, 0],
+    //   [-40, 75]
+    // ],
+    fitBoundsOptions: ([seattleCoords,miamiCoords]),
+    zoom: 3
   });
+
+
 
   return [$touristMap, $localMap]
 }
@@ -585,6 +614,7 @@ function init() {
   $touristMap.on('load', () => {
     $touristMap.resize();
     $touristMap.scrollZoom.disable()
+    $touristMap.fitBounds([seattleCoords,miamiCoords], {padding:0})
     // $compareMap.setSlider(width)
     //   d3.select('.mapboxgl-compare').classed('hidden', true)
     setupEnterView()
@@ -618,5 +648,6 @@ function init() {
 
 export default {
   init,
-  resize
+  resize,
+  heightResize
 };
