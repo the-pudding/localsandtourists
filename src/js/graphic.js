@@ -185,9 +185,9 @@ function setupExplore() {
         attractionTotal = relevantFeature[0].properties.total
         currentAttractionSlug = relevantFeature[0].properties.attraction_slug
         console.log(relevantFeature)
-        $touristMap.on('click', () => {
-          console.log(currentAttractionSlug)
-        })
+        // $touristMap.on('click', () => {
+        //   console.log(currentAttractionSlug)
+        // })
       }
 
       $detailsAttractionName.text(attractionName)
@@ -329,7 +329,7 @@ function setupExplore() {
 function updateMapBack(el) {
 
   const currentStep = el.getAttribute('data-previous-step')
-  console.log(currentStep);
+  //   console.log(currentStep);
   if (currentStep === 'slide1') {
     // $localMap.setLayoutProperty('local-tourist-alpaca-corner', 'visibility', 'none');
 
@@ -369,7 +369,7 @@ function updateMapBack(el) {
 
 
   } else if (currentStep === 'slide5') {
-    console.log(currentStep)
+    // console.log(currentStep)
   }
 }
 
@@ -461,7 +461,7 @@ function updateMap(el) {
 
     changeZindex = false
 
-    console.log('changed z index')
+    // console.log('changed z index')
   } else if (!changeZindex) {
     d3.selectAll('.story')
       .style('z-index', '50')
@@ -471,7 +471,7 @@ function updateMap(el) {
   }
 
   const currentStep = el.getAttribute('data-step')
-  console.log(currentStep)
+  //   console.log(currentStep)
 
   if (currentStep === 'slide1') {
 
@@ -540,7 +540,7 @@ function updateMap(el) {
 
 function setupEnterView() {
 
-  console.log('enter view setting up')
+  //   console.log('enter view setting up')
   enterView({
     selector: '.story-step',
     enter(el) {
