@@ -293,7 +293,7 @@ function setupExplore() {
     $localMap.scrollZoom.disable()
     $touristMap.scrollZoom.disable()
 
-    if(d3.select("body").classed("is-mobile")){
+    if (d3.select("body").classed("is-mobile")) {
       $localMap.dragPan.disable()
       $touristMap.dragPan.disable()
     }
@@ -364,7 +364,7 @@ function setupExplore() {
 function updateMapBack(el) {
 
   const currentStep = el.getAttribute('data-previous-step')
-  console.log(currentStep);
+  //   console.log(currentStep);
   if (currentStep === 'slide1') {
     // $localMap.setLayoutProperty('local-tourist-alpaca-corner', 'visibility', 'none');
 
@@ -439,7 +439,7 @@ function createCompare(match) {
 
 
   function handleStart(evt) {
-    console.log("here");
+    // console.log("here");
     //evt.preventDefault();
   }
 
@@ -528,7 +528,7 @@ function updateMap(el) {
   // }
 
   const currentStep = el.getAttribute('data-step')
-  console.log(currentStep)
+  //   console.log(currentStep)
 
   if (currentStep === 'slide1') {
 
@@ -668,7 +668,7 @@ function init() {
   resize()
   setupDOM()
   console.log(d3.select("body").classed("is-mobile"));
-  if(d3.select("body").classed("is-mobile")){
+  if (d3.select("body").classed("is-mobile")) {
     dragPanSetting = false;
   }
   const maps = makeMap()
