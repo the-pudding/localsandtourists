@@ -549,8 +549,8 @@ function updateMap(el) {
 
   } else if (currentStep === 'slide3') {
 
-    // $touristMap.setLayoutProperty('top-level-attractions', 'visibility', 'none');
-    // $touristMap.setLayoutProperty('top-level-attractions-circles', 'visibility', 'none');
+    $touristMap.setLayoutProperty('top-level-attractions', 'visibility', 'none');
+    $touristMap.setLayoutProperty('top-level-attractions-circles', 'visibility', 'none');
 
 
     stopTimesquare = true;
@@ -635,7 +635,7 @@ function makeMap() {
     maxZoom: 17,
     dragPan: dragPanSetting,
     scrollZoom: false,
-    style: 'mapbox://styles/dock4242/cka4gpcor04481is1e30pmzc2?optimize=true', // optimize=true',
+    style: 'mapbox://styles/dock4242/ckaojaze40a1d1imx87xmsrq0',//?optimize=true',
     // bounds: [
     //   [-180, 0],
     //   [-40, 75]
@@ -650,7 +650,7 @@ function makeMap() {
     maxZoom: 17,
     dragPan: dragPanSetting,
     scrollZoom: false,
-    style: 'mapbox://styles/dock4242/cka4g5py203jk1iqs4cpx6b9e?optimize=true', // optimize=true',
+    style: 'mapbox://styles/dock4242/ckaoj7khd15v51it7zrnxrxpr',//?optimize=true',
     // bounds: [
     //   [-180, 0],
     //   [-40, 75]
