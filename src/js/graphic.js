@@ -329,7 +329,7 @@ function setupExplore() {
 function updateMapBack(el) {
 
   const currentStep = el.getAttribute('data-previous-step')
-  //   console.log(currentStep);
+  console.log(currentStep);
   if (currentStep === 'slide1') {
     // $localMap.setLayoutProperty('local-tourist-alpaca-corner', 'visibility', 'none');
 
@@ -369,7 +369,20 @@ function updateMapBack(el) {
 
 
   } else if (currentStep === 'slide5') {
-    // console.log(currentStep)
+
+    $touristMap.flyTo({
+      center: [nycCoords[1], nycCoords[0]],
+      zoom: nycZoom
+    })
+
+    $localMap.flyTo({
+      center: [nycCoords[1], nycCoords[0]],
+      zoom: nycZoom
+    })
+
+    // $touristMap.setCenter([nycCoords[1], nycCoords[0]])
+    // $touristMap.setZoom(nycZoom)
+    // console.log('goback')
   }
 }
 
@@ -471,7 +484,7 @@ function updateMap(el) {
   }
 
   const currentStep = el.getAttribute('data-step')
-  //   console.log(currentStep)
+  console.log(currentStep)
 
   if (currentStep === 'slide1') {
 
