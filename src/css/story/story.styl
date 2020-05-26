@@ -36,10 +36,11 @@
             display: flex
             flex-direction: column
             justify-content: flex-end
+            width 90%
+            margin 0 auto
             span
               padding-left 5px
               padding-right 5px
-
             &__para
                 margin 0
                 margin-top 0.5rem
@@ -47,6 +48,8 @@
                 font-size 24px
                 @media (max-width: 550px)
                     font-size 18px
+                @media (max-width: 400px)
+                    margin-left 0
 
 
             .byline
@@ -373,6 +376,7 @@
     width max-content
     height auto
     color: white
+    pointer-events none
     position fixed
     .display--attraction-name
         font-weight: 800
@@ -531,36 +535,47 @@
   height 100%
   overflow hidden
   pointer-events none
+
 #map
   height 100vh
-  .mapboxgl-compare
-    background-color #252525
-    width 4px
-    pointer-events all
-    .compare-swiper-vertical
+  #compare-container
+    z-index 1000000
+    .mapboxgl-compare
       background-color #252525
-    &:before, &:after
-      content 'Tourist-Majority Reviews'
-      position absolute
-      top 50%
-      left 0px
-      font-family $national
-      text-align right
-      font-weight 600
-      transform translate(-100%,calc(-50% - 70px))
-      background: #e69005;
-      color: white;
-      width: 150px;
-      padding: .5rem .5rem;
-      border-top-left-radius: 3px;
-      border-bottom-left-radius: 3px;
+      width 4px
+      pointer-events none
+      z-index 1000000
 
-    &:after
-      content 'Locals-Majority Reviews'
-      transform translate(4px, calc(-50% - 70px))
-      text-align left
-      border-top-right-radius: 3px;
-      border-bottom-right-radius: 3px;
-      border-top-left-radius: 0px;
-      border-bottom-left-radius: 0px;
-      background #d62b74
+      .compare-swiper-vertical
+        background-color #252525
+        pointer-events all
+        user-select none
+        z-index 1000000
+        @media (max-width: 450px)
+          transform translate(0,10px) scale(1.6)
+      &:before, &:after
+        content 'Tourist-Majority Reviews'
+        position absolute
+        top 50%
+        left 0px
+        font-family $national
+        text-align right
+        font-weight 600
+        transform translate(-100%,calc(-50% - 70px))
+        background: #e69005;
+        color: white;
+        width: 150px;
+        pointer-events all
+        padding: .5rem .5rem;
+        border-top-left-radius: 3px;
+        border-bottom-left-radius: 3px;
+
+      &:after
+        content 'Locals-Majority Reviews'
+        transform translate(4px, calc(-50% - 70px))
+        text-align left
+        border-top-right-radius: 3px;
+        border-bottom-right-radius: 3px;
+        border-top-left-radius: 0px;
+        border-bottom-left-radius: 0px;
+        background #d62b74

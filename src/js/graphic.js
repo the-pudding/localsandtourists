@@ -15,6 +15,10 @@ let compareGraphicBuilt = false;
 let width;
 let exploring = false;
 
+//let dragPanSetting = true;
+
+let dragPanSetting = true;
+
 let mapSelected = "local";
 const nycCoords = [40.767474, -73.970294]
 const centerCooords = [40.119448, -98.056438]
@@ -158,6 +162,10 @@ function handleLinkOut(thing) {
 function setupExplore() {
   const $exploreButton = d3.select('[data-step="slide6"]').select('.story-text')
   const $storyButton = d3.select('.btn--to-story')
+
+
+
+
   if (d3.select("body").classed("is-mobile") || width < 600) {
     $storyButton.html('<svg viewBox="0 0 40 40"> <path class="close-x" d="M 10,10 L 30,30 M 30,10 L 10,30"></path> </svg>');
   }
@@ -170,6 +178,26 @@ function setupExplore() {
   const $detailsAttractionName = d3.select('.display--attraction-name')
   const $detailsRating = d3.select('.display--rating')
   const $detailsTotal = d3.select('.display--total')
+
+  $storyButton.node().addEventListener("touchmove", handleMove, false);
+  $storyButton.node().addEventListener("wheel", handleMove, false);
+
+  document.querySelectorAll('.btn--map-select').forEach(item => {
+    item.addEventListener("wheel", handleMove, false);
+    item.addEventListener("touchmove", handleMove, false);
+
+  });
+
+  document.querySelectorAll('.display--attraction-name').forEach(item => {
+    item.addEventListener("wheel", handleMove, false);
+    item.addEventListener("touchmove", handleMove, false);
+  });
+
+  d3.select('.about').node().addEventListener("wheel", handleMove, false);
+  d3.select('.about').node().addEventListener("touchmove", handleMove, false);
+
+  $aboutButton.node().addEventListener("wheel", handleMove, false);
+  $aboutButton.node().addEventListener("touchmove", handleMove, false);
 
 
   $touristMap.on('mousemove', e => {
@@ -184,10 +212,6 @@ function setupExplore() {
         attractionScore = relevantFeature[0].properties.score
         attractionTotal = relevantFeature[0].properties.total
         currentAttractionSlug = relevantFeature[0].properties.attraction_slug
-        console.log(relevantFeature)
-        // $touristMap.on('click', () => {
-        //   console.log(currentAttractionSlug)
-        // })
       }
 
       $detailsAttractionName.text(attractionName)
@@ -253,6 +277,7 @@ function setupExplore() {
 
     $touristMap.fitBounds([seattleCoords, miamiCoords])
     $localMap.fitBounds([seattleCoords, miamiCoords])
+
   })
 
   $storyButton.on('click', () => {
@@ -266,13 +291,23 @@ function setupExplore() {
     d3.select('.story').classed('hidden', false)
     d3.select('.cover').classed('hidden', false)
     $localMap.scrollZoom.disable()
-    $localMap.dragPan.disable()
     $touristMap.scrollZoom.disable()
-    $touristMap.dragPan.disable()
+
+    if(d3.select("body").classed("is-mobile")){
+      $localMap.dragPan.disable()
+      $touristMap.dragPan.disable()
+    }
 
     mapSelected = "local"
     changeShownMap();
     exploring = false;
+
+    $toggle.classed("selected", function (d, i) {
+      if (i == 1) {
+        return true;
+      }
+      return false
+    })
 
     $touristMap.setCenter([nycCoords[1], nycCoords[0]]);
     $touristMap.setZoom(nycZoom);
@@ -296,7 +331,6 @@ function setupExplore() {
   $aboutCloseButton.on('click', () => {
     d3.select('.about').classed('hidden', true)
     d3.select('.about-close').classed('hidden', true)
-
   })
 
   $toggle.classed("selected", function (d, i) {
@@ -320,6 +354,7 @@ function setupExplore() {
 
   d3.selectAll('.story-step')
     .style('z-index', '5')
+
 
   function normalize(string) {
     return string.trim().toLowerCase();
@@ -386,6 +421,10 @@ function updateMapBack(el) {
   }
 }
 
+function handleMove(evt) {
+  evt.preventDefault();
+}
+
 function createCompare(match) {
   d3.select("#local").style("display", "block");
   d3.select("#tourist").style("display", null);
@@ -399,13 +438,17 @@ function createCompare(match) {
   }
 
 
-  $compareMap = new mapboxgl.Compare($touristMap, $localMap, "#compare-container");
-
-  function handleMove(evt) {
-    evt.preventDefault();
+  function handleStart(evt) {
+    console.log("here");
+    //evt.preventDefault();
   }
 
+  $compareMap = new mapboxgl.Compare($touristMap, $localMap, "#compare-container");
+
   d3.select(".compare-swiper-vertical").node().addEventListener("touchmove", handleMove, false);
+
+  d3.select(".compare-swiper-vertical").node().addEventListener("touchstart", handleStart, false);
+
 
   $localMap.resize();
   $touristMap.resize();
@@ -462,26 +505,27 @@ function updateMap(el) {
   storyZindex = +d3.selectAll('.story').style('z-index')
   storyStepZindex = +d3.selectAll('.story-step').style('z-index')
 
-  if (changeZindex) {
-    storyZindex += 1
-    storyStepZindex += 1
-
-    d3.selectAll('.story')
-      .style('z-index', storyZindex)
-
-    d3.selectAll('.story-step')
-      .style('z-index', storyStepZindex)
-
-    changeZindex = false
-
-    // console.log('changed z index')
-  } else if (!changeZindex) {
-    d3.selectAll('.story')
-      .style('z-index', '50')
-
-    d3.selectAll('.story-step')
-      .style('z-index', '50')
-  }
+  // if (changeZindex) {
+  //   storyZindex += 1
+  //   storyStepZindex += 1
+  //
+  //   d3.selectAll('.story')
+  //     .style('z-index', storyZindex)
+  //
+  //   d3.selectAll('.story-step')
+  //     .style('z-index', storyStepZindex)
+  //
+  //   changeZindex = false
+  //
+  //   // console.log('changed z index')
+  // }
+  // else if (!changeZindex) {
+  //   d3.selectAll('.story')
+  //     .style('z-index', '50')
+  //
+  //   d3.selectAll('.story-step')
+  //     .style('z-index', '50')
+  // }
 
   const currentStep = el.getAttribute('data-step')
   console.log(currentStep)
@@ -589,7 +633,7 @@ function makeMap() {
     container: 'tourist',
     center: [centerCooords[1], centerCooords[0]],
     maxZoom: 17,
-    dragPan: false,
+    dragPan: dragPanSetting,
     scrollZoom: false,
     style: 'mapbox://styles/dock4242/cka4gpcor04481is1e30pmzc2?optimize=true', // optimize=true',
     // bounds: [
@@ -604,7 +648,7 @@ function makeMap() {
     container: 'local',
     center: [centerCooords[1], centerCooords[0]],
     maxZoom: 17,
-    dragPan: false,
+    dragPan: dragPanSetting,
     scrollZoom: false,
     style: 'mapbox://styles/dock4242/cka4g5py203jk1iqs4cpx6b9e?optimize=true', // optimize=true',
     // bounds: [
@@ -623,7 +667,12 @@ function makeMap() {
 function init() {
   resize()
   setupDOM()
+  console.log(d3.select("body").classed("is-mobile"));
+  if(d3.select("body").classed("is-mobile")){
+    dragPanSetting = false;
+  }
   const maps = makeMap()
+
 
   $touristMap.on('load', () => {
     $touristMap.resize();
