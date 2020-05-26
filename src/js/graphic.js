@@ -204,7 +204,7 @@ function setupExplore() {
 
     if (exploring) {
       const pointFeatures = $touristMap.queryRenderedFeatures(e.point)
-      const relevantLayer = ['updated_all_locals_tourists-5mhfie']
+      const relevantLayer = ['no_filter_tourists-a27jm7']
       const relevantFeature = pointFeatures.filter(item => relevantLayer.includes(item.sourceLayer))
 
       if (relevantFeature.length > 0) {
@@ -234,7 +234,7 @@ function setupExplore() {
 
     if (exploring) {
       const pointFeatures = $localMap.queryRenderedFeatures(e.point)
-      const relevantLayer = ['updated_all_locals_tourists-5mhfie']
+      const relevantLayer = ['no_filter_locals-bznd0a']
       const relevantFeature = pointFeatures.filter(item => relevantLayer.includes(item.sourceLayer))
 
 
