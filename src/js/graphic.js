@@ -200,6 +200,15 @@ function setupExplore() {
   $aboutButton.node().addEventListener("touchmove", handleMove, false);
 
 
+
+
+
+
+
+
+
+
+
   $touristMap.on('mousemove', e => {
 
     if (exploring) {
@@ -207,29 +216,75 @@ function setupExplore() {
       const relevantLayer = ['no_filter_tourists-a27jm7']
       const relevantFeature = pointFeatures.filter(item => relevantLayer.includes(item.sourceLayer))
 
+
       if (relevantFeature.length > 0) {
         attractionName = relevantFeature[0].properties.attraction_name
         attractionScore = relevantFeature[0].properties.score
         attractionTotal = relevantFeature[0].properties.total
         currentAttractionSlug = relevantFeature[0].properties.attraction_slug
+
+        $detailsAttractionName.text(attractionName)
+        $detailsRating.text(attractionScore)
+        $detailsTotal.text(attractionTotal)
+
+        let htmlString;
+
+        if (d3.select("body").classed("is-mobile") || width < 600) {
+          htmlString = attractionName == '' ? 'Hover over a destination to find out its rating and total number of reviews.' : `
+
+            <span class='display--attraction-name'>${attractionName}</span> scores an average of <span class='display--rating'>${formatScore(attractionScore)}</span>, with
+            <span class='display--total'>${numberWithCommas(attractionTotal)}</span> ratings.`
+
+
+            d3.select('#tourist').on('click',()=>{})
+
+            d3.select('.attraction-detail-container').on('click',()=>{
+              if(currentAttractionSlug){
+                window.open(('https://www.tripadvisor.com/'+currentAttractionSlug), '_blank')
+              }
+            })
+
+          }
+        else{
+          htmlString = attractionName == '' ? 'Hover over a destination to find out its rating and total number of reviews, or click it to visit its Tripadvisor page.' : `
+
+            <span class='display--attraction-name'>${attractionName}</span> scores an average of <span class='display--rating'>${formatScore(attractionScore)}</span>, with
+            <span class='display--total'>${numberWithCommas(attractionTotal)}</span> ratings.`;
+
+            d3.select('#tourist').on('click',()=>{
+              if(currentAttractionSlug){
+                console.log('locals link')
+                window.open(('https://www.tripadvisor.com/'+currentAttractionSlug), '_blank')
+              }
+            })
+        }
+
+        $detailsBar.html(htmlString)
+      }
+      else if (relevantFeature.length === 0) {
+
+
+        currentAttractionSlug = null
+
+        let htmlString;
+        if (d3.select("body").classed("is-mobile") || width < 600) {
+          htmlString = 'Hover over a destination to find out its rating and total number of reviews.'
+          }
+        else{
+          htmlString = 'Hover over a destination to find out its rating and total number of reviews, or click it to visit its Tripadvisor page.'
+        }
+
+        $detailsBar.html(htmlString)
       }
 
-      $detailsAttractionName.text(attractionName)
-      $detailsRating.text(attractionScore)
-      $detailsTotal.text(attractionTotal)
-
-      const htmlString = attractionName == '' ? 'Hover over a destination to find out its rating and total number of reviews.' : `
-
-        <span class='display--attraction-name'>${attractionName}</span> scores an average of <span class='display--rating'>${formatScore(attractionScore)}</span>, with
-        <span class='display--total'>${numberWithCommas(attractionTotal)}</span> ratings.`;
-
-      $detailsBar
-        .html(htmlString)
 
 
 
     }
+
+
   })
+
   $localMap.on('mousemove', e => {
 
     if (exploring) {
@@ -242,17 +297,65 @@ function setupExplore() {
         attractionName = relevantFeature[0].properties.attraction_name
         attractionScore = relevantFeature[0].properties.score
         attractionTotal = relevantFeature[0].properties.total
+        currentAttractionSlug = relevantFeature[0].properties.attraction_slug
+
+        $detailsAttractionName.text(attractionName)
+        $detailsRating.text(attractionScore)
+        $detailsTotal.text(attractionTotal)
+
+        let htmlString;
+
+        if (d3.select("body").classed("is-mobile") || width < 600) {
+          htmlString = attractionName == '' ? 'Hover over a destination to find out its rating and total number of reviews.' : `
+
+            <span class='display--attraction-name'>${attractionName}</span> scores an average of <span class='display--rating'>${formatScore(attractionScore)}</span>, with
+            <span class='display--total'>${numberWithCommas(attractionTotal)}</span> ratings.`
+
+            d3.select('#local').on('click',()=>{})
+
+            d3.select('.attraction-detail-container').on('click',()=>{
+              if(currentAttractionSlug){
+                console.log('locals link')
+                window.open(('https://www.tripadvisor.com/'+currentAttractionSlug), '_blank')
+              }
+            })
+
+          }
+        else{
+          htmlString = attractionName == '' ? 'Hover over a destination to find out its rating and total number of reviews, or click it to visit its Tripadvisor page.' : `
+
+            <span class='display--attraction-name'>${attractionName}</span> scores an average of <span class='display--rating'>${formatScore(attractionScore)}</span>, with
+            <span class='display--total'>${numberWithCommas(attractionTotal)}</span> ratings.`;
+
+            d3.select('#local').on('click',()=>{
+              if(currentAttractionSlug){
+                console.log('locals link')
+                window.open(('https://www.tripadvisor.com/'+currentAttractionSlug), '_blank')
+              }
+            })
+        }
+
+        $detailsBar.html(htmlString)
+      }
+      else if (relevantFeature.length === 0) {
+
+
+        currentAttractionSlug = null
+
+        let htmlString;
+        if (d3.select("body").classed("is-mobile") || width < 600) {
+          htmlString = 'Hover over a destination to find out its rating and total number of reviews.'
+          }
+        else{
+          htmlString = 'Hover over a destination to find out its rating and total number of reviews, or click it to visit its Tripadvisor page.'
+        }
+
+        $detailsBar.html(htmlString)
       }
 
-      $detailsAttractionName.text(attractionName)
-      $detailsRating.text(attractionScore)
-      $detailsTotal.text(attractionTotal)
 
-      const htmlString = attractionName == '' ? 'Hover over a destination to find out its rating and total number of reviews.' : `
-      <span class='display--attraction-name'>${attractionName}</span> scores an average of <span class='display--rating'>${formatScore(attractionScore)}</span>, with
-      <span class='display--total'>${numberWithCommas(attractionTotal)}</span> ratings.`;
 
-      $detailsBar.html(htmlString)
+
     }
 
 
@@ -616,6 +719,11 @@ function setupDOM() {
 
   // d3.select('#map')
   //   .style('height', `${height}px`)
+  console.log('setting up')
+    if (d3.select("body").classed("is-mobile") || width < 600) {
+      d3.select('.attraction-detail-container')
+      .text('Hover over a destination to find out its rating and total number of reviews.')
+    }
 
   d3.selectAll(".story-step").style("margin-top", function (d, i) {
     if (i == 0) {
